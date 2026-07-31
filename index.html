@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>3D Apparel Design Studio (Optimized)</title>
+<title>3D Apparel Design Studio (Fixed & HD)</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
@@ -32,10 +32,10 @@ button:active { transform: scale(0.98); }
 .section-title { font-size: 12px; color: #9399b2; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px; margin-top: 4px; }
 .editor-container { position: relative; width: 100%; height: 420px; background: #181825; border-radius: 12px; display: flex; justify-content: center; align-items: center; overflow: hidden; border: 1px dashed #45475a; }
 .apparel-svg { position: absolute; width: 300px; height: 400px; z-index: 1; pointer-events: none; opacity: 0.25; }
-.canvas-wrapper { position: absolute !important; z-index: 2; width: 260px; height: 380px; }
+.canvas-wrapper { position: absolute !important; z-index: 2; width: 260px; height: 351px; } /* Nisbət: 1 : 1.35 */
 .canvas-container { width: 100% !important; height: 100% !important; }
 canvas { width: 100% !important; height: 100% !important; }
-#three-view { width: 100%; height: 420px; border-radius: 12px; background: radial-gradient(circle at 50% 30%, #1e1e2e, #09090d); cursor: grab; }
+#three-view { width: 100%; height: 420px; border-radius: 12px; background: radial-gradient(circle at 50% 30%, #1e1e2e, #09090d); cursor: grab; overflow: hidden; }
 #three-view:active { cursor: grabbing; }
 .view-selector { display: flex; gap: 8px; }
 .hidden { display: none !important; }
@@ -151,10 +151,11 @@ hr { border: 0; border-top: 1px solid #313244; margin: 4px 0; width: 100%; }
         <path id="apparel-path" fill="#89b4fa" stroke="#ffffff" stroke-width="0.5" d="M 30,10 L 40,17 C 45,19 55,19 60,17 L 70,10 L 90,25 L 80,40 L 73,33 L 73,90 L 27,90 L 27,33 L 20,40 L 10,25 Z"/>
       </svg>
       <div id="front-canvas-container" class="canvas-wrapper">
-        <canvas id="canvas-front" width="512" height="768"></canvas>
+        <!-- Canvas pikselləri 1000x1350 (Əla HD keyfiyyət üçün) -->
+        <canvas id="canvas-front" width="1000" height="1350"></canvas>
       </div>
       <div id="back-canvas-container" class="canvas-wrapper hidden">
-        <canvas id="canvas-back" width="512" height="768"></canvas>
+        <canvas id="canvas-back" width="1000" height="1350"></canvas>
       </div>
     </div>
     <p class="hint">Təsviri və ya mətni sürüşdürün, miqyaslandırın və fırladın.</p>
@@ -168,7 +169,7 @@ hr { border: 0; border-top: 1px solid #313244; margin: 4px 0; width: 100%; }
       <button id="btn-autorotate" class="btn-secondary active">🔄 Auto-Rotate</button>
       <button id="btn-walk" class="btn-secondary">🚶 Animasiya</button>
     </div>
-    <p class="hint">Siçanla basıb saxlayaraq 3D modeli 360° fırladın.</p>
+    <p class="hint">Siçanla sürüşdürün: Fırlat | Siçanın təkəri (Scroll): Yaxınlaşdır / Uzaqlaşdır</p>
   </div>
 </div>
 
@@ -177,8 +178,7 @@ window.addEventListener('DOMContentLoaded', () => {
   let currentSide = 'front';
   let currentType = 'tshirt';
 
-  // Fabric.js canvas obyektlərini yüksək dəqiqlikdə (512x768) inisializasiya edirik
-  const fabricConfig = { preserveObjectStacking: true, selectionColor: 'rgba(203,166,247,0.3)', cornerColor: '#cba6f7', cornerSize: 10 };
+  const fabricConfig = { preserveObjectStacking: true, selectionColor: 'rgba(203,166,247,0.3)', cornerColor: '#cba6f7', cornerSize: 14 };
   const canvasFront = new fabric.Canvas('canvas-front', fabricConfig);
   const canvasBack = new fabric.Canvas('canvas-back', fabricConfig);
 
@@ -255,7 +255,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const txt = document.getElementById('text-input').value;
     if (!txt) return;
     const text = new fabric.Text(txt, {
-      left: 100, top: 100, fontSize: 36, fontWeight: 'bold',
+      left: 300, top: 300, fontSize: 72, fontWeight: 'bold',
       fill: document.getElementById('text-color').value,
       fontFamily: document.getElementById('text-font').value
     });
@@ -271,8 +271,8 @@ window.addEventListener('DOMContentLoaded', () => {
     const reader = new FileReader();
     reader.onload = (f) => {
       fabric.Image.fromURL(f.target.result, (img) => {
-        img.scaleToWidth(200);
-        img.set({ left: 150, top: 150 });
+        img.scaleToWidth(400);
+        img.set({ left: 300, top: 300 });
         const c = getActiveCanvas();
         c.add(img); c.setActiveObject(img); c.renderAll();
       });
@@ -285,9 +285,9 @@ window.addEventListener('DOMContentLoaded', () => {
     const url = document.getElementById('image-url-input').value.trim();
     if (!url) return;
     fabric.Image.fromURL(url, (img) => {
-      if (!img || !img.width) { alert('Şəkil yüklənmədi. CORS dəstəyi olan bir link daxil edin.'); return; }
-      img.scaleToWidth(200);
-      img.set({ left: 150, top: 150 });
+      if (!img || !img.width) { alert('Şəkil yüklənmədi.'); return; }
+      img.scaleToWidth(400);
+      img.set({ left: 300, top: 300 });
       const c = getActiveCanvas();
       c.add(img); c.setActiveObject(img); c.renderAll();
     }, { crossOrigin: 'anonymous' });
@@ -475,15 +475,20 @@ window.addEventListener('DOMContentLoaded', () => {
     leftLegGroup = buildLeg(-1);
     rightLegGroup = buildLeg(1);
 
-    // Dinamik Textura Bağlaması
+    // Teksturaların yaradılması və HD Filtri (Blurlaşmanın qarşısını alır)
     frontTex = new THREE.CanvasTexture(document.getElementById('canvas-front'));
     backTex = new THREE.CanvasTexture(document.getElementById('canvas-back'));
-    frontTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
-    backTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    
+    [frontTex, backTex].forEach(tex => {
+      tex.minFilter = THREE.LinearFilter;
+      tex.magFilter = THREE.LinearFilter;
+      tex.generateMipmaps = false;
+      tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    });
 
-    const printGeo = new THREE.PlaneGeometry(0.9, 1.15);
+    // 2D Aspect Ratio (1 : 1.35) ilə Tam Eyni Nisbət (1.0 x 1.35)
+    const printGeo = new THREE.PlaneGeometry(1.0, 1.35);
 
-    // Z-Fighting-in qarşısını almaq üçün təhlükəsiz offset (0.178)
     const printFront = new THREE.Mesh(printGeo, new THREE.MeshBasicMaterial({ map: frontTex, transparent: true, depthWrite: false }));
     printFront.position.set(0, 0.18, 0.178);
     shirtGroup.add(printFront);
@@ -498,6 +503,13 @@ window.addEventListener('DOMContentLoaded', () => {
 
   canvasFront.on('after:render', () => { if (frontTex) frontTex.needsUpdate = true; });
   canvasBack.on('after:render', () => { if (backTex) backTex.needsUpdate = true; });
+
+  // Siçanın təkəri ilə Zoom (Yaxınlaşdırma / Uzaqlaşdırma)
+  container.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    camera.position.z += e.deltaY * 0.003;
+    camera.position.z = Math.max(1.8, Math.min(8.0, camera.position.z)); // Min 1.8, Max 8.0 məsafə çərçivəsi
+  }, { passive: false });
 
   // Siçan vasitəsilə 3D Modeli fırlatma
   let isDragging = false, prevX = 0;
