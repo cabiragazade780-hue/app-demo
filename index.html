@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>3D Apparel Design Studio (Fixed & HD)</title>
+<title>3D Apparel Design Studio (Fixed CORS & HD)</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
@@ -151,7 +151,6 @@ hr { border: 0; border-top: 1px solid #313244; margin: 4px 0; width: 100%; }
         <path id="apparel-path" fill="#89b4fa" stroke="#ffffff" stroke-width="0.5" d="M 30,10 L 40,17 C 45,19 55,19 60,17 L 70,10 L 90,25 L 80,40 L 73,33 L 73,90 L 27,90 L 27,33 L 20,40 L 10,25 Z"/>
       </svg>
       <div id="front-canvas-container" class="canvas-wrapper">
-        <!-- Canvas pikselləri 1000x1350 (Əla HD keyfiyyət üçün) -->
         <canvas id="canvas-front" width="1000" height="1350"></canvas>
       </div>
       <div id="back-canvas-container" class="canvas-wrapper hidden">
@@ -281,15 +280,27 @@ window.addEventListener('DOMContentLoaded', () => {
     e.target.value = '';
   });
 
+  // CORS Proxy Dəstəyi İnteqrasiya Olunmuş Şəkil Yükləmə Düyməsi
   document.getElementById('image-url-btn').addEventListener('click', () => {
-    const url = document.getElementById('image-url-input').value.trim();
+    let url = document.getElementById('image-url-input').value.trim();
     if (!url) return;
+
+    // CORS bloklamasından yayınmaq üçün avtomatik Proxy əlavə edirik:
+    if (!url.startsWith('https://corsproxy.io/?')) {
+      url = 'https://corsproxy.io/?' + encodeURIComponent(url);
+    }
+
     fabric.Image.fromURL(url, (img) => {
-      if (!img || !img.width) { alert('Şəkil yüklənmədi.'); return; }
+      if (!img || !img.width) { 
+        alert('Şəkil yüklənmədi və ya link yararsızdır.'); 
+        return; 
+      }
       img.scaleToWidth(400);
       img.set({ left: 300, top: 300 });
       const c = getActiveCanvas();
-      c.add(img); c.setActiveObject(img); c.renderAll();
+      c.add(img); 
+      c.setActiveObject(img); 
+      c.renderAll();
     }, { crossOrigin: 'anonymous' });
   });
 
@@ -508,7 +519,7 @@ window.addEventListener('DOMContentLoaded', () => {
   container.addEventListener('wheel', (e) => {
     e.preventDefault();
     camera.position.z += e.deltaY * 0.003;
-    camera.position.z = Math.max(1.8, Math.min(8.0, camera.position.z)); // Min 1.8, Max 8.0 məsafə çərçivəsi
+    camera.position.z = Math.max(1.8, Math.min(8.0, camera.position.z));
   }, { passive: false });
 
   // Siçan vasitəsilə 3D Modeli fırlatma
