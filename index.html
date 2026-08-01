@@ -100,7 +100,7 @@ hr { border: 0; border-top: 1px solid rgba(255,255,255,0.08); margin: 2px 0; wid
 <div id="toast"></div>
 
 <h2>3D Apparel Design Studio</h2>
-<p class="subtitle">Dizaynını yarat, real 3D insan modelində tam miqyasda gör</p>
+<p class="subtitle">Dizaynını yarat, 2D və 3D miqyas tarazlığı ilə canlı gör</p>
 
 <div class="main-layout">
   <div class="panel controls">
@@ -219,7 +219,7 @@ hr { border: 0; border-top: 1px solid rgba(255,255,255,0.08); margin: 2px 0; wid
         <canvas id="canvas-back" width="340" height="420"></canvas>
       </div>
     </div>
-    <p class="hint">Çap sahəsi (bənövşəyi çərçivə) 3D modelin üzərindəki çap hissəsi ilə tam eyniləşdirildi.</p>
+    <p class="hint">2D kətandakı obyektin yeri və ölçüsü 3D modeldə də tam eyni olaraq əks olunur.</p>
   </div>
 
   <div class="panel">
@@ -583,12 +583,14 @@ window.addEventListener('DOMContentLoaded', () => {
   const frontTex = new THREE.CanvasTexture(compFront);
   const backTex = new THREE.CanvasTexture(compBack);
 
+  // 2D kətandakı tam mərkəz və miqyası 3D teksturaya birə-bir uyğunlaşdıran funksiya
   function refreshComposite(side) {
     const comp = side === 'front' ? compFront : compBack;
     const designCanvasEl = document.getElementById(side === 'front' ? 'canvas-front' : 'canvas-back');
     const ctx = comp.getContext('2d');
     const shirtColor = document.getElementById('shirt-color').value;
 
+    ctx.clearRect(0, 0, comp.width, comp.height);
     ctx.fillStyle = shirtColor;
     ctx.fillRect(0, 0, comp.width, comp.height);
 
@@ -599,6 +601,7 @@ window.addEventListener('DOMContentLoaded', () => {
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, comp.width, comp.height);
 
+    // 2D kətan elementini 3D üzərinə eyni koordinat sistemində köçürürük
     ctx.drawImage(designCanvasEl, 0, 0, comp.width, comp.height);
     (side === 'front' ? frontTex : backTex).needsUpdate = true;
   }
@@ -614,7 +617,6 @@ window.addEventListener('DOMContentLoaded', () => {
     leftMat = new THREE.MeshStandardMaterial({ color: shirtColor, roughness: rough, metalness: metal });
     rightMat = new THREE.MeshStandardMaterial({ color: shirtColor, roughness: rough, metalness: metal });
     
-    // UV miqyasını 2D çap sahəsinə tam uyğunlaşdıran tənzimləmə
     frontFaceMat = new THREE.MeshStandardMaterial({ map: frontTex, color: 0xffffff, roughness: rough, metalness: metal, transparent: true });
     backFaceMat = new THREE.MeshStandardMaterial({ map: backTex, color: 0xffffff, roughness: rough, metalness: metal, transparent: true });
     
@@ -639,15 +641,8 @@ window.addEventListener('DOMContentLoaded', () => {
     neck.position.set(0, 0.98, 0);
     shirtGroup.add(neck);
 
+    // Torso və 3D üzərindəki tekstura sahəsinin proporsiyası
     const torsoGeo = new THREE.BoxGeometry(1.05, 1.25, 0.38);
-    // Teksturanın geyim üzərində düzgün miqyaslanması üçün UV kordinatları tənzimləndi
-    const uvAttr = torsoGeo.attributes.uv;
-    for (let i = 0; i < uvAttr.count; i++) {
-      let u = uvAttr.getX(i);
-      let v = uvAttr.getY(i);
-      uvAttr.setXY(i, u * 1.0, v * 1.0);
-    }
-
     torsoMesh = new THREE.Mesh(torsoGeo, [bodyMat, bodyMat, bodyMat, bodyMat, frontFaceMat, backFaceMat]);
     torsoMesh.castShadow = true; torsoMesh.receiveShadow = true;
     torsoMesh.position.set(0, 0.22, 0);
