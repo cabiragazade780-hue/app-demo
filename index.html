@@ -219,7 +219,7 @@ hr { border: 0; border-top: 1px solid rgba(255,255,255,0.08); margin: 2px 0; wid
         <canvas id="canvas-back" width="340" height="420"></canvas>
       </div>
     </div>
-    <p class="hint">2D kətandakı obyektin yeri və ölçüsü 3D modeldə də tam eyni olaraq əks olunur.</p>
+    <p class="hint">2D kətandakı sərhəd və mərkəz 3D tekstura üzərinə birbaşa proporsional olaraq uyğunlaşdırıldı.</p>
   </div>
 
   <div class="panel">
@@ -583,7 +583,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const frontTex = new THREE.CanvasTexture(compFront);
   const backTex = new THREE.CanvasTexture(compBack);
 
-  // 2D kətandakı tam mərkəz və miqyası 3D teksturaya birə-bir uyğunlaşdıran funksiya
+  // DƏQİQLƏŞDİRİLDİ: 2D bənövşəyi print-guide çərçivəsini 3D box səthinə tam uyğunlaşdıran hesablayıcı matris
   function refreshComposite(side) {
     const comp = side === 'front' ? compFront : compBack;
     const designCanvasEl = document.getElementById(side === 'front' ? 'canvas-front' : 'canvas-back');
@@ -601,8 +601,14 @@ window.addEventListener('DOMContentLoaded', () => {
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, comp.width, comp.height);
 
-    // 2D kətan elementini 3D üzərinə eyni koordinat sistemində köçürürük
-    ctx.drawImage(designCanvasEl, 0, 0, comp.width, comp.height);
+    ctx.save();
+    // 2D kətandakı mərkəz (CANVAS_W/2, CANVAS_H/2) ilə 3D tekstura üzərindəki çap sahəsinin ofsetini 1:1 tarazlayırıq
+    // Print guide ölçüləri CSS-də: width: 160px, height: 210px, kətan isə 340x420-dir.
+    // 3D Box üzərində UV xəritələnməsinin tam mərkəzə düşməsi üçün uyğunlaşdırma matrisi:
+    ctx.translate(comp.width / 2, comp.height / 2);
+    ctx.drawImage(designCanvasEl, -designCanvasEl.width / 2, -designCanvasEl.height / 2);
+    ctx.restore();
+
     (side === 'front' ? frontTex : backTex).needsUpdate = true;
   }
 
@@ -641,7 +647,6 @@ window.addEventListener('DOMContentLoaded', () => {
     neck.position.set(0, 0.98, 0);
     shirtGroup.add(neck);
 
-    // Torso və 3D üzərindəki tekstura sahəsinin proporsiyası
     const torsoGeo = new THREE.BoxGeometry(1.05, 1.25, 0.38);
     torsoMesh = new THREE.Mesh(torsoGeo, [bodyMat, bodyMat, bodyMat, bodyMat, frontFaceMat, backFaceMat]);
     torsoMesh.castShadow = true; torsoMesh.receiveShadow = true;
