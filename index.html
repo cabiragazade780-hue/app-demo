@@ -65,7 +65,7 @@ button:active { transform: scale(0.97); }
   overflow: hidden; border: 1px dashed rgba(255,255,255,0.12); transition: border-color .2s;
 }
 .editor-container.drag-over { border-color: #cba6f7; box-shadow: inset 0 0 0 2px rgba(203,166,247,0.4); }
-.apparel-svg { position: absolute; width: 300px; height: 400px; z-index: 1; pointer-events: none; opacity: 0.25; }
+.apparel-svg { position: absolute; width: 340px; height: 420px; z-index: 1; pointer-events: none; opacity: 0.25; }
 .print-guide {
   position: absolute; z-index: 1; pointer-events: none;
   border: 1.5px dashed rgba(203,166,247,0.45); border-radius: 6px;
@@ -234,10 +234,10 @@ hr { border: 0; border-top: 1px solid rgba(255,255,255,0.08); margin: 2px 0; wid
       </svg>
       <div class="print-guide" id="print-guide"></div>
       <div id="front-canvas-container" class="canvas-wrapper">
-        <canvas id="canvas-front" width="260" height="351"></canvas>
+        <canvas id="canvas-front" width="340" height="420"></canvas>
       </div>
       <div id="back-canvas-container" class="canvas-wrapper hidden">
-        <canvas id="canvas-back" width="260" height="351"></canvas>
+        <canvas id="canvas-back" width="340" height="420"></canvas>
       </div>
     </div>
     <p class="hint">Bənövşəyi kəsik xətt real çap sahəsini göstərir. "Uyğunlaşdır" düyməsi şəkli ora avtomatik sığdırır.</p>
@@ -270,9 +270,9 @@ function showToast(msg) {
 window.addEventListener('DOMContentLoaded', () => {
   let currentSide = 'front';
   let currentType = 'tshirt';
-  const CANVAS_W = 260, CANVAS_H = 351;
+  const CANVAS_W = 340, CANVAS_H = 420;
 
-  const GUIDE = { left: CANVAS_W * 0.16, top: CANVAS_H * 0.16, width: CANVAS_W * 0.68, height: CANVAS_H * 0.58 };
+  const GUIDE = { left: CANVAS_W * 0.15, top: CANVAS_H * 0.12, width: CANVAS_W * 0.70, height: CANVAS_H * 0.72 };
   const guideEl = document.getElementById('print-guide');
   guideEl.style.left = GUIDE.left + 'px';
   guideEl.style.top = GUIDE.top + 'px';
@@ -633,9 +633,7 @@ window.addEventListener('DOMContentLoaded', () => {
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, comp.width, comp.height);
 
-    ctx.globalCompositeOperation = 'multiply';
     ctx.drawImage(designCanvasEl, 0, 0, comp.width, comp.height);
-    ctx.globalCompositeOperation = 'source-over';
 
     (side === 'front' ? frontTex : backTex).needsUpdate = true;
   }
@@ -650,8 +648,8 @@ window.addEventListener('DOMContentLoaded', () => {
     bodyMat = new THREE.MeshStandardMaterial({ color: shirtColor, roughness: rough, metalness: metal });
     leftMat = new THREE.MeshStandardMaterial({ color: shirtColor, roughness: rough, metalness: metal });
     rightMat = new THREE.MeshStandardMaterial({ color: shirtColor, roughness: rough, metalness: metal });
-    frontFaceMat = new THREE.MeshStandardMaterial({ map: frontTex, color: shirtColor, roughness: rough, metalness: metal });
-    backFaceMat = new THREE.MeshStandardMaterial({ map: backTex, color: shirtColor, roughness: rough, metalness: metal });
+    frontFaceMat = new THREE.MeshStandardMaterial({ map: frontTex, color: 0xffffff, roughness: rough, metalness: metal });
+    backFaceMat = new THREE.MeshStandardMaterial({ map: backTex, color: 0xffffff, roughness: rough, metalness: metal });
     skinMat = new THREE.MeshStandardMaterial({ color: 0xd4a373, roughness: 0.7 });
     const pantsMat = new THREE.MeshStandardMaterial({ color: 0x1c1c28, roughness: 0.7 });
 
