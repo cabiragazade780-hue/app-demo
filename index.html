@@ -65,16 +65,18 @@ button:active { transform: scale(0.97); }
   overflow: hidden; border: 1px dashed rgba(255,255,255,0.12); transition: border-color .2s;
 }
 .editor-container.drag-over { border-color: #cba6f7; box-shadow: inset 0 0 0 2px rgba(203,166,247,0.4); }
-.apparel-svg { position: absolute; width: 340px; height: 420px; z-index: 1; pointer-events: none; opacity: 0.25; }
+.apparel-svg { position: absolute; width: 300px; height: 380px; z-index: 1; pointer-events: none; opacity: 0.35; left: 50%; top: 50%; transform: translate(-50%, -50%); }
 .print-guide {
   position: absolute; z-index: 1; pointer-events: none;
-  border: 1.5px dashed rgba(203,166,247,0.45); border-radius: 6px;
+  border: 1.5px dashed rgba(203,166,247,0.6); border-radius: 6px;
+  left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: 170px; height: 220px;
 }
 .print-guide::after {
-  content: 'Tövsiyə olunan çap sahəsi'; position: absolute; top: -18px; left: 0;
-  font-size: 9.5px; color: rgba(203,166,247,0.6); white-space: nowrap;
+  content: 'Çap Sahəsi'; position: absolute; top: -18px; left: 0;
+  font-size: 9.5px; color: rgba(203,166,247,0.8); white-space: nowrap;
 }
-.canvas-wrapper { position: absolute !important; z-index: 2; }
+.canvas-wrapper { position: absolute !important; z-index: 2; left: 50%; top: 50%; transform: translate(-50%, -50%); }
 #three-view {
   width: 100%; height: 440px; border-radius: 14px;
   background: radial-gradient(circle at 50% 25%, #23233a, #050508 75%);
@@ -205,16 +207,6 @@ hr { border: 0; border-top: 1px solid rgba(255,255,255,0.08); margin: 2px 0; wid
         <option value="overlay">Overlay</option>
         <option value="screen">İşıqlı (Screen)</option>
       </select>
-
-      <div class="section-title">Filtr</div>
-      <div class="filter-row grid3">
-        <button class="btn-secondary btn-mini" data-filter="none">Normal</button>
-        <button class="btn-secondary btn-mini" data-filter="gray">Ağ-Qara</button>
-        <button class="btn-secondary btn-mini" data-filter="sepia">Sepia</button>
-        <button class="btn-secondary btn-mini" data-filter="invert">İnvert</button>
-        <button class="btn-secondary btn-mini" data-filter="bright">Parlaq</button>
-        <button class="btn-secondary btn-mini" data-filter="contrast">Kontrast</button>
-      </div>
     </div>
 
     <div class="row">
@@ -240,7 +232,7 @@ hr { border: 0; border-top: 1px solid rgba(255,255,255,0.08); margin: 2px 0; wid
         <canvas id="canvas-back" width="340" height="420"></canvas>
       </div>
     </div>
-    <p class="hint">Bənövşəyi kəsik xətt real çap sahəsini göstərir. "Uyğunlaşdır" düyməsi şəkli ora avtomatik sığdırır.</p>
+    <p class="hint">Şəkil birbaşa köynəyin üzərinə (bənövşəyi sərhədə) gəlir. "Uyğunlaşdır" düyməsi ideal ölçüdə oturdur.</p>
   </div>
 
   <div class="panel">
@@ -271,14 +263,6 @@ window.addEventListener('DOMContentLoaded', () => {
   let currentSide = 'front';
   let currentType = 'tshirt';
   const CANVAS_W = 340, CANVAS_H = 420;
-
-  // 2D Çap sahəsi (Guide) genişləndirildi və köynəyin sinə/kürək nahiyəsinə tam oturduldu
-  const GUIDE = { left: CANVAS_W * 0.22, top: CANVAS_H * 0.18, width: CANVAS_W * 0.56, height: CANVAS_H * 0.65 };
-  const guideEl = document.getElementById('print-guide');
-  guideEl.style.left = GUIDE.left + 'px';
-  guideEl.style.top = GUIDE.top + 'px';
-  guideEl.style.width = GUIDE.width + 'px';
-  guideEl.style.height = GUIDE.height + 'px';
 
   const fabricConfig = {
     backgroundColor: null,
@@ -396,13 +380,14 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   function fitToGuide(img) {
-    const scaleX = GUIDE.width / img.width;
-    const scaleY = GUIDE.height / img.height;
+    const guideW = 170, guideH = 220;
+    const scaleX = guideW / img.width;
+    const scaleY = guideH / img.height;
     const scale = Math.min(scaleX, scaleY);
     img.scale(scale);
     img.set({
-      left: GUIDE.left + GUIDE.width / 2,
-      top: GUIDE.top + GUIDE.height / 2,
+      left: CANVAS_W / 2,
+      top: CANVAS_H / 2,
       originX: 'center', originY: 'center'
     });
   }
@@ -413,7 +398,7 @@ window.addEventListener('DOMContentLoaded', () => {
       if (autoFit) {
         fitToGuide(img);
       } else {
-        img.scaleToWidth(CANVAS_W * 0.4);
+        img.scaleToWidth(140);
         img.set({ left: CANVAS_W / 2, top: CANVAS_H / 2, originX: 'center', originY: 'center' });
       }
       const c = getActiveCanvas();
@@ -467,7 +452,7 @@ window.addEventListener('DOMContentLoaded', () => {
       if (!img || !img.width) { showToast('Şəkil yüklənmədi'); return; }
       const autoFit = document.getElementById('auto-fit-toggle').checked;
       if (autoFit) fitToGuide(img);
-      else { img.scaleToWidth(CANVAS_W * 0.4); img.set({ left: CANVAS_W / 2, top: CANVAS_H / 2, originX: 'center', originY: 'center' }); }
+      else { img.scaleToWidth(140); img.set({ left: CANVAS_W / 2, top: CANVAS_H / 2, originX: 'center', originY: 'center' }); }
       const c = getActiveCanvas();
       c.add(img); c.setActiveObject(img); c.renderAll();
       showToast('Şəkil əlavə olundu ✓');
@@ -632,7 +617,6 @@ window.addEventListener('DOMContentLoaded', () => {
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, comp.width, comp.height);
 
-    // 2D kətandakı dizaynı 3D teksturasına birə-bir və düzgün mərkəz ilə köçürürük
     ctx.drawImage(designCanvasEl, 0, 0, comp.width, comp.height);
 
     (side === 'front' ? frontTex : backTex).needsUpdate = true;
@@ -649,7 +633,6 @@ window.addEventListener('DOMContentLoaded', () => {
     leftMat = new THREE.MeshStandardMaterial({ color: shirtColor, roughness: rough, metalness: metal });
     rightMat = new THREE.MeshStandardMaterial({ color: shirtColor, roughness: rough, metalness: metal });
     
-    // 3D teksturaların düzgün görünməsi üçün material parametrləri tənzimləndi
     frontFaceMat = new THREE.MeshStandardMaterial({ map: frontTex, color: 0xffffff, roughness: rough, metalness: metal, transparent: true });
     backFaceMat = new THREE.MeshStandardMaterial({ map: backTex, color: 0xffffff, roughness: rough, metalness: metal, transparent: true });
     
