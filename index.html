@@ -272,7 +272,8 @@ window.addEventListener('DOMContentLoaded', () => {
   let currentType = 'tshirt';
   const CANVAS_W = 340, CANVAS_H = 420;
 
-  const GUIDE = { left: CANVAS_W * 0.15, top: CANVAS_H * 0.12, width: CANVAS_W * 0.70, height: CANVAS_H * 0.72 };
+  // 2D Çap sahəsi (Guide) genişləndirildi və köynəyin sinə/kürək nahiyəsinə tam oturduldu
+  const GUIDE = { left: CANVAS_W * 0.22, top: CANVAS_H * 0.18, width: CANVAS_W * 0.56, height: CANVAS_H * 0.65 };
   const guideEl = document.getElementById('print-guide');
   guideEl.style.left = GUIDE.left + 'px';
   guideEl.style.top = GUIDE.top + 'px';
@@ -415,7 +416,6 @@ window.addEventListener('DOMContentLoaded', () => {
         img.scaleToWidth(CANVAS_W * 0.4);
         img.set({ left: CANVAS_W / 2, top: CANVAS_H / 2, originX: 'center', originY: 'center' });
       }
-      img.set('globalCompositeOperation', 'multiply');
       const c = getActiveCanvas();
       c.add(img); c.setActiveObject(img); c.renderAll();
       showToast('Şəkil əlavə olundu ✓');
@@ -468,7 +468,6 @@ window.addEventListener('DOMContentLoaded', () => {
       const autoFit = document.getElementById('auto-fit-toggle').checked;
       if (autoFit) fitToGuide(img);
       else { img.scaleToWidth(CANVAS_W * 0.4); img.set({ left: CANVAS_W / 2, top: CANVAS_H / 2, originX: 'center', originY: 'center' }); }
-      img.set('globalCompositeOperation', 'multiply');
       const c = getActiveCanvas();
       c.add(img); c.setActiveObject(img); c.renderAll();
       showToast('Şəkil əlavə olundu ✓');
@@ -595,7 +594,7 @@ window.addEventListener('DOMContentLoaded', () => {
   keyLight.position.set(2.2, 4, 3);
   keyLight.castShadow = true;
   scene.add(keyLight);
-  scene.add(new THREE.AmbientLight(0xffffff, 0.35));
+  scene.add(new THREE.AmbientLight(0xffffff, 0.45));
 
   const floor = new THREE.Mesh(new THREE.PlaneGeometry(6, 6), new THREE.ShadowMaterial({ opacity: 0.35 }));
   floor.rotation.x = -Math.PI / 2;
@@ -627,12 +626,13 @@ window.addEventListener('DOMContentLoaded', () => {
     ctx.fillRect(0, 0, comp.width, comp.height);
 
     const grad = ctx.createLinearGradient(0, 0, comp.width, 0);
-    grad.addColorStop(0, 'rgba(0,0,0,0.18)');
-    grad.addColorStop(0.5, 'rgba(255,255,255,0.04)');
-    grad.addColorStop(1, 'rgba(0,0,0,0.22)');
+    grad.addColorStop(0, 'rgba(0,0,0,0.12)');
+    grad.addColorStop(0.5, 'rgba(255,255,255,0.05)');
+    grad.addColorStop(1, 'rgba(0,0,0,0.15)');
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, comp.width, comp.height);
 
+    // 2D kətandakı dizaynı 3D teksturasına birə-bir və düzgün mərkəz ilə köçürürük
     ctx.drawImage(designCanvasEl, 0, 0, comp.width, comp.height);
 
     (side === 'front' ? frontTex : backTex).needsUpdate = true;
@@ -648,8 +648,11 @@ window.addEventListener('DOMContentLoaded', () => {
     bodyMat = new THREE.MeshStandardMaterial({ color: shirtColor, roughness: rough, metalness: metal });
     leftMat = new THREE.MeshStandardMaterial({ color: shirtColor, roughness: rough, metalness: metal });
     rightMat = new THREE.MeshStandardMaterial({ color: shirtColor, roughness: rough, metalness: metal });
-    frontFaceMat = new THREE.MeshStandardMaterial({ map: frontTex, color: 0xffffff, roughness: rough, metalness: metal });
-    backFaceMat = new THREE.MeshStandardMaterial({ map: backTex, color: 0xffffff, roughness: rough, metalness: metal });
+    
+    // 3D teksturaların düzgün görünməsi üçün material parametrləri tənzimləndi
+    frontFaceMat = new THREE.MeshStandardMaterial({ map: frontTex, color: 0xffffff, roughness: rough, metalness: metal, transparent: true });
+    backFaceMat = new THREE.MeshStandardMaterial({ map: backTex, color: 0xffffff, roughness: rough, metalness: metal, transparent: true });
+    
     skinMat = new THREE.MeshStandardMaterial({ color: 0xd4a373, roughness: 0.7 });
     const pantsMat = new THREE.MeshStandardMaterial({ color: 0x1c1c28, roughness: 0.7 });
 
