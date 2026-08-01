@@ -55,7 +55,6 @@ button:active { transform: scale(0.97); }
 .btn-mini { padding: 7px 6px; font-size: 11px; }
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-.grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
 .section-title { font-size: 11px; color: #8a8aa3; text-transform: uppercase; font-weight: 700; letter-spacing: 0.8px; margin-top: 6px; }
 .editor-container {
   position: relative; width: 100%; height: 440px;
@@ -170,7 +169,7 @@ hr { border: 0; border-top: 1px solid rgba(255,255,255,0.08); margin: 2px 0; wid
     <input type="file" id="image-upload" accept="image/*">
     <div class="paste-zone">📋 Şəkli kopyala (sağ klik → Copy image), bura klikləyib <b>Ctrl+V</b> et<br>və ya birbaşa dizayn sahəsinə sürüklə</div>
     <div class="row" style="gap:5px;">
-      <input type="text" id="image-url-input" placeholder="Şəkil URL-i (bəzən işləməyə bilər)...">
+      <input type="text" id="image-url-input" placeholder="Şəkil URL-i...">
       <button id="image-url-btn" class="btn-secondary" style="width:40%;">Yüklə</button>
     </div>
 
@@ -273,7 +272,6 @@ window.addEventListener('DOMContentLoaded', () => {
   let currentType = 'tshirt';
   const CANVAS_W = 260, CANVAS_H = 351;
 
-  // Real geyimdə çap sahəsi sinə hissəsini geniş tutur — bələdçi çərçivə bunu göstərir (əvvəlki versiya həddən artıq kiçik idi)
   const GUIDE = { left: CANVAS_W * 0.16, top: CANVAS_H * 0.16, width: CANVAS_W * 0.68, height: CANVAS_H * 0.58 };
   const guideEl = document.getElementById('print-guide');
   guideEl.style.left = GUIDE.left + 'px';
@@ -358,7 +356,6 @@ window.addEventListener('DOMContentLoaded', () => {
   }
   autoRotateBtn.addEventListener('click', () => setAutoRotate(!autoRotate));
 
-  // ---- Animasiya rejimləri: Sakit / Yeriyiş / Rəqs ----
   const animBtns = { idle: document.getElementById('btn-idle'), walk: document.getElementById('btn-walk'), dance: document.getElementById('btn-dance') };
   let animMode = 'idle';
   function setAnimMode(mode) {
@@ -385,7 +382,6 @@ window.addEventListener('DOMContentLoaded', () => {
     c.renderAll();
   });
 
-  // ---- Tez nişanlar ----
   document.querySelectorAll('.sticker-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const glyph = btn.dataset.sticker;
@@ -398,7 +394,6 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // ---- Mərkəzi şəkil əlavəetmə (fayl / paste / drag-drop hamısı buradan keçir) ----
   function fitToGuide(img) {
     const scaleX = GUIDE.width / img.width;
     const scaleY = GUIDE.height / img.height;
@@ -468,42 +463,22 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('image-url-btn').addEventListener('click', () => {
     const rawUrl = document.getElementById('image-url-input').value.trim();
     if (!rawUrl) return;
-    const proxies = [
-      u => 'https://corsproxy.io/?url=' + encodeURIComponent(u),
-      u => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u),
-      u => u
-    ];
-    let i = 0;
-    function tryNext() {
-      if (i >= proxies.length) { showToast('Alınmadı — bunun əvəzinə şəkli kopyala (Ctrl+V) et'); return; }
-      const url = proxies[i](rawUrl);
-      i++;
-      fabric.Image.fromURL(url, (img, isError) => {
-        if (isError || !img || !img.width) { tryNext(); return; }
-        const autoFit = document.getElementById('auto-fit-toggle').checked;
-        if (autoFit) fitToGuide(img);
-        else { img.scaleToWidth(CANVAS_W * 0.4); img.set({ left: CANVAS_W / 2, top: CANVAS_H / 2, originX: 'center', originY: 'center' }); }
-        img.set('globalCompositeOperation', 'multiply');
-        const c = getActiveCanvas();
-        c.add(img); c.setActiveObject(img); c.renderAll();
-        showToast('Şəkil əlavə olundu ✓');
-      }, { crossOrigin: 'anonymous' });
-    }
-    tryNext();
+    fabric.Image.fromURL(rawUrl, (img) => {
+      if (!img || !img.width) { showToast('Şəkil yüklənmədi'); return; }
+      const autoFit = document.getElementById('auto-fit-toggle').checked;
+      if (autoFit) fitToGuide(img);
+      else { img.scaleToWidth(CANVAS_W * 0.4); img.set({ left: CANVAS_W / 2, top: CANVAS_H / 2, originX: 'center', originY: 'center' }); }
+      img.set('globalCompositeOperation', 'multiply');
+      const c = getActiveCanvas();
+      c.add(img); c.setActiveObject(img); c.renderAll();
+      showToast('Şəkil əlavə olundu ✓');
+    }, { crossOrigin: 'anonymous' });
   });
 
   document.getElementById('delete-btn').addEventListener('click', () => {
     const c = getActiveCanvas();
     const obj = c.getActiveObject();
     if (obj) { c.remove(obj); c.renderAll(); }
-  });
-  window.addEventListener('keydown', (e) => {
-    const tag = document.activeElement.tagName;
-    if ((e.key === 'Delete' || e.key === 'Backspace') && tag !== 'INPUT' && tag !== 'TEXTAREA') {
-      const c = getActiveCanvas();
-      const obj = c.getActiveObject();
-      if (obj) { c.remove(obj); c.renderAll(); }
-    }
   });
 
   document.getElementById('clear-btn').addEventListener('click', () => getActiveCanvas().clear());
@@ -515,7 +490,6 @@ window.addEventListener('DOMContentLoaded', () => {
     a.href = dataURL; a.click();
   });
 
-  // ---- Effekt Paneli ----
   const effectsPanel = document.getElementById('effects-panel');
   const opacitySlider = document.getElementById('opacity-slider');
   const rotateSlider = document.getElementById('rotate-slider');
@@ -604,24 +578,6 @@ window.addEventListener('DOMContentLoaded', () => {
     if (obj) { obj.set('globalCompositeOperation', blendSelect.value); getActiveCanvas().renderAll(); }
   });
 
-  document.querySelectorAll('.filter-row button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const c = getActiveCanvas();
-      const obj = c.getActiveObject();
-      if (!obj || obj.type !== 'image') { showToast('Əvvəlcə şəklin üzərinə klikləyin'); return; }
-      const type = btn.dataset.filter;
-      obj.filters = [];
-      if (type === 'gray') obj.filters.push(new fabric.Image.filters.Grayscale());
-      if (type === 'sepia') obj.filters.push(new fabric.Image.filters.Sepia());
-      if (type === 'invert') obj.filters.push(new fabric.Image.filters.Invert());
-      if (type === 'bright') obj.filters.push(new fabric.Image.filters.Brightness({ brightness: 0.25 }));
-      if (type === 'contrast') obj.filters.push(new fabric.Image.filters.Contrast({ contrast: 0.3 }));
-      obj.applyFilters();
-      c.renderAll();
-    });
-  });
-
-  // ================= THREE.JS =================
   const container = document.getElementById('three-view');
   const scene = new THREE.Scene();
 
@@ -632,18 +588,13 @@ window.addEventListener('DOMContentLoaded', () => {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setSize(container.clientWidth, container.clientHeight);
   renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   container.appendChild(renderer.domElement);
 
   scene.add(new THREE.HemisphereLight(0x8888ff, 0x110022, 0.6));
   const keyLight = new THREE.DirectionalLight(0xffffff, 1.15);
   keyLight.position.set(2.2, 4, 3);
   keyLight.castShadow = true;
-  keyLight.shadow.mapSize.set(1024, 1024);
   scene.add(keyLight);
-  const rimLight = new THREE.DirectionalLight(0xcba6f7, 0.5);
-  rimLight.position.set(-3, 1.5, -3);
-  scene.add(rimLight);
   scene.add(new THREE.AmbientLight(0xffffff, 0.35));
 
   const floor = new THREE.Mesh(new THREE.PlaneGeometry(6, 6), new THREE.ShadowMaterial({ opacity: 0.35 }));
@@ -659,43 +610,22 @@ window.addEventListener('DOMContentLoaded', () => {
   let headMesh, torsoMesh, leftArmGroup, rightArmGroup, leftLegGroup, rightLegGroup;
   let autoRotate = true, clock = 0, targetRotationY = 0;
 
-  // ---- Kompozit toxuma: parça rəngi + kətan taxılı fon + kənar kölgələmə + dizayn (multiply) ----
-  // Bu, dizaynı ayrıca "üzən lövhə" kimi deyil, gövdənin öz materialının bir hissəsi kimi bişirir.
-  // Nəticədə eyni işıq/kölgəni alır, parallax fərqi yaranmır — "stiker" hissi aradan qalxır.
   const compFront = document.createElement('canvas');
   const compBack = document.createElement('canvas');
   compFront.width = compBack.width = CANVAS_W;
   compFront.height = compBack.height = CANVAS_H;
   const frontTex = new THREE.CanvasTexture(compFront);
   const backTex = new THREE.CanvasTexture(compBack);
-  frontTex.minFilter = backTex.minFilter = THREE.LinearFilter;
-  frontTex.magFilter = backTex.magFilter = THREE.LinearFilter;
-
-  function hexToRgb(hex) {
-    const v = parseInt(hex.replace('#',''), 16);
-    return { r: (v>>16)&255, g: (v>>8)&255, b: v&255 };
-  }
 
   function refreshComposite(side) {
     const comp = side === 'front' ? compFront : compBack;
     const designCanvasEl = document.getElementById(side === 'front' ? 'canvas-front' : 'canvas-back');
     const ctx = comp.getContext('2d');
     const shirtColor = document.getElementById('shirt-color').value;
-    const rgb = hexToRgb(shirtColor);
 
-    // 1) Baza rəng + kətan taxılı (fabric grain) fon
     ctx.fillStyle = shirtColor;
     ctx.fillRect(0, 0, comp.width, comp.height);
-    const imgData = ctx.getImageData(0, 0, comp.width, comp.height);
-    for (let i = 0; i < imgData.data.length; i += 4) {
-      const n = (Math.random() - 0.5) * 10;
-      imgData.data[i] = Math.min(255, Math.max(0, imgData.data[i] + n));
-      imgData.data[i+1] = Math.min(255, Math.max(0, imgData.data[i+1] + n));
-      imgData.data[i+2] = Math.min(255, Math.max(0, imgData.data[i+2] + n));
-    }
-    ctx.putImageData(imgData, 0, 0);
 
-    // 2) Bədən əyriliyini simulyasiya edən yumşaq kənar kölgələmə
     const grad = ctx.createLinearGradient(0, 0, comp.width, 0);
     grad.addColorStop(0, 'rgba(0,0,0,0.18)');
     grad.addColorStop(0.5, 'rgba(255,255,255,0.04)');
@@ -703,7 +633,6 @@ window.addEventListener('DOMContentLoaded', () => {
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, comp.width, comp.height);
 
-    // 3) Dizaynı parçaya "basılmış" effekti ilə birləşdir
     ctx.globalCompositeOperation = 'multiply';
     ctx.drawImage(designCanvasEl, 0, 0, comp.width, comp.height);
     ctx.globalCompositeOperation = 'source-over';
@@ -735,7 +664,6 @@ window.addEventListener('DOMContentLoaded', () => {
     neck.position.set(0, 0.92, 0);
     shirtGroup.add(neck);
 
-    // Gövdə: sağ, sol, üst, alt üzlər sadə material; ön/arxa üzlər dizayn toxuması ilə (BoxGeometry üz sırası: +x,-x,+y,-y,+z,-z)
     const torsoGeo = new THREE.BoxGeometry(1.1, 1.3, 0.32);
     torsoMesh = new THREE.Mesh(torsoGeo, [bodyMat, bodyMat, bodyMat, bodyMat, frontFaceMat, backFaceMat]);
     torsoMesh.castShadow = true; torsoMesh.receiveShadow = true;
@@ -785,8 +713,6 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   update3DModel();
-  refreshComposite('front');
-  refreshComposite('back');
 
   canvasFront.on('after:render', () => refreshComposite('front'));
   canvasBack.on('after:render', () => refreshComposite('back'));
@@ -800,20 +726,6 @@ window.addEventListener('DOMContentLoaded', () => {
     shirtGroup.rotation.y += delta * 0.01;
     targetRotationY = shirtGroup.rotation.y;
   });
-  container.addEventListener('touchstart', (e) => { isDragging = true; prevX = e.touches[0].clientX; setAutoRotate(false); });
-  window.addEventListener('touchend', () => isDragging = false);
-  window.addEventListener('touchmove', (e) => {
-    if (!isDragging) return;
-    const delta = e.touches[0].clientX - prevX; prevX = e.touches[0].clientX;
-    shirtGroup.rotation.y += delta * 0.01;
-    targetRotationY = shirtGroup.rotation.y;
-  });
-
-  window.addEventListener('resize', () => {
-    const w = container.clientWidth, h = container.clientHeight;
-    camera.aspect = w / h; camera.updateProjectionMatrix();
-    renderer.setSize(w, h);
-  });
 
   function animate() {
     requestAnimationFrame(animate);
@@ -826,28 +738,17 @@ window.addEventListener('DOMContentLoaded', () => {
       if (leftLegGroup) leftLegGroup.rotation.x = -swing;
       if (rightLegGroup) rightLegGroup.rotation.x = swing;
       shirtGroup.position.y = Math.abs(Math.sin(clock * 10)) * 0.06;
-      shirtGroup.rotation.z *= 0.9;
     } else if (animMode === 'dance') {
       const t = clock * 6;
       if (leftArmGroup) leftArmGroup.rotation.x = Math.sin(t) * 1.1 - 0.3;
       if (rightArmGroup) rightArmGroup.rotation.x = Math.sin(t + Math.PI) * 1.1 - 0.3;
-      if (leftArmGroup) leftArmGroup.rotation.z = Math.cos(t * 0.7) * 0.3;
-      if (rightArmGroup) rightArmGroup.rotation.z = -Math.cos(t * 0.7) * 0.3;
-      if (leftLegGroup) leftLegGroup.rotation.x = Math.sin(t * 1.3) * 0.35;
-      if (rightLegGroup) rightLegGroup.rotation.x = -Math.sin(t * 1.3) * 0.35;
       shirtGroup.rotation.z = Math.sin(t * 0.8) * 0.12;
       shirtGroup.position.y = Math.abs(Math.sin(t * 1.6)) * 0.1;
-      if (headMesh) headMesh.rotation.z = Math.sin(t * 0.9) * 0.15;
     } else {
       if (leftArmGroup) { leftArmGroup.rotation.x *= 0.9; leftArmGroup.rotation.z *= 0.9; }
       if (rightArmGroup) { rightArmGroup.rotation.x *= 0.9; rightArmGroup.rotation.z *= 0.9; }
-      if (leftLegGroup) leftLegGroup.rotation.x *= 0.9;
-      if (rightLegGroup) rightLegGroup.rotation.x *= 0.9;
-      if (headMesh) headMesh.rotation.z *= 0.9;
       shirtGroup.position.y *= 0.9;
       shirtGroup.rotation.z *= 0.9;
-      // sakit vəziyyətdə yüngül nəfəs effekti
-      if (torsoMesh) torsoMesh.scale.y = 1 + Math.sin(clock * 1.5) * 0.01;
     }
 
     if (autoRotate) {
