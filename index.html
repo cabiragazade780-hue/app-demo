@@ -3,9 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>3D Apparel Design Studio</title>
+<title>3D Apparel Design Studio - Real Human</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <style>
 * { box-sizing: border-box; }
 body {
@@ -73,6 +74,7 @@ button:active { transform: scale(0.97); }
   width: 100%; height: 440px; border-radius: 14px;
   background: radial-gradient(circle at 50% 25%, #2a2a42, #08080d 75%);
   cursor: grab; overflow: hidden;
+  position: relative;
 }
 #three-view:active { cursor: grabbing; }
 .view-selector { display: flex; gap: 8px; }
@@ -93,6 +95,11 @@ hr { border: 0; border-top: 1px solid rgba(255,255,255,0.08); margin: 2px 0; wid
 .sticker-row { display: flex; gap: 6px; flex-wrap: wrap; }
 .sticker-btn { width: auto; flex: 1; font-size: 18px; padding: 8px 0; background: rgba(255,255,255,0.06); box-shadow: none; }
 .anim-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+#loader-status {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  font-size: 13px; color: #cba6f7; background: rgba(10,10,16,0.85); padding: 10px 20px;
+  border-radius: 8px; border: 1px solid rgba(203,166,247,0.3); pointer-events: none; z-index: 10;
+}
 </style>
 </head>
 <body>
@@ -100,7 +107,7 @@ hr { border: 0; border-top: 1px solid rgba(255,255,255,0.08); margin: 2px 0; wid
 <div id="toast"></div>
 
 <h2>3D Apparel Design Studio</h2>
-<p class="subtitle">Dizaynını yarat, 2D və 3D miqyas tarazlığı ilə canlı gör</p>
+<p class="subtitle">Real İnsan Modeli və 2D/3D Sinxronizasiya</p>
 
 <div class="main-layout">
   <div class="panel controls">
@@ -219,12 +226,14 @@ hr { border: 0; border-top: 1px solid rgba(255,255,255,0.08); margin: 2px 0; wid
         <canvas id="canvas-back" width="340" height="420"></canvas>
       </div>
     </div>
-    <p class="hint">2D kətandakı sərhəd və mərkəz 3D tekstura üzərinə birbaşa proporsional olaraq uyğunlaşdırıldı.</p>
+    <p class="hint">2D kətandakı dizayn real insan modelinin geyim səthinə ötürülür.</p>
   </div>
 
   <div class="panel">
-    <h3 style="margin:0; text-align:center;">Real 3D Model</h3>
-    <div id="three-view"></div>
+    <h3 style="margin:0; text-align:center;">Real 3D İnsan Modeli</h3>
+    <div id="three-view">
+      <div id="loader-status">Model yüklənir...</div>
+    </div>
     <div class="anim-selector">
       <button id="btn-idle" class="btn-secondary active">🧍 Sakit</button>
       <button id="btn-walk" class="btn-secondary">🚶 Yeriyiş</button>
@@ -274,17 +283,13 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('apparel-type').addEventListener('change', (e) => {
     currentType = e.target.value;
     document.getElementById('apparel-path').setAttribute('d', svgPaths[currentType]);
-    update3DModel();
+    // Əgər fərqli GLTF modelləriniz varsa burada dəyişə bilərsiniz
   });
 
   document.getElementById('shirt-color').addEventListener('input', (e) => {
     const val = e.target.value;
     document.getElementById('apparel-path').setAttribute('fill', val);
-    if (bodyMat) bodyMat.color.set(val);
-    if (leftMat) leftMat.color.set(val);
-    if (rightMat) rightMat.color.set(val);
-    if (frontFaceMat) frontFaceMat.color.set(val);
-    if (backFaceMat) backFaceMat.color.set(val);
+    if (clothingMat) clothingMat.color.set(val);
     refreshComposite('front');
     refreshComposite('back');
   });
@@ -292,11 +297,11 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('gloss-slider').addEventListener('input', (e) => {
     document.getElementById('gloss-val').innerText = e.target.value + '%';
     const rough = 1 - (e.target.value / 100);
-    [bodyMat, leftMat, rightMat, frontFaceMat, backFaceMat].forEach(m => { if (m) m.roughness = rough; });
+    if (clothingMat) clothingMat.roughness = rough;
   });
   document.getElementById('metal-slider').addEventListener('input', (e) => {
     document.getElementById('metal-val').innerText = e.target.value + '%';
-    [bodyMat, leftMat, rightMat, frontFaceMat, backFaceMat].forEach(m => { if (m) m.metalness = e.target.value / 100; });
+    if (clothingMat) clothingMat.metalness = e.target.value / 100;
   });
 
   document.getElementById('btn-front').addEventListener('click', () => {
@@ -545,7 +550,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const scene = new THREE.Scene();
 
   const camera = new THREE.PerspectiveCamera(42, container.clientWidth / container.clientHeight, 0.1, 1000);
-  camera.position.set(0, 0.2, 4.2);
+  camera.position.set(0, 1.0, 3.5);
 
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -554,27 +559,25 @@ window.addEventListener('DOMContentLoaded', () => {
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   container.appendChild(renderer.domElement);
 
-  scene.add(new THREE.HemisphereLight(0xffffff, 0x222244, 0.65));
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x222244, 0.7));
   const keyLight = new THREE.DirectionalLight(0xffffff, 1.2);
   keyLight.position.set(3, 5, 4);
   keyLight.castShadow = true;
-  keyLight.shadow.mapSize.width = 1024;
-  keyLight.shadow.mapSize.height = 1024;
   scene.add(keyLight);
   scene.add(new THREE.AmbientLight(0xffffff, 0.4));
 
   const floor = new THREE.Mesh(new THREE.PlaneGeometry(6, 6), new THREE.ShadowMaterial({ opacity: 0.3 }));
   floor.rotation.x = -Math.PI / 2;
-  floor.position.y = -1.65;
+  floor.position.y = 0;
   floor.receiveShadow = true;
   scene.add(floor);
 
-  let shirtGroup = new THREE.Group();
-  scene.add(shirtGroup);
+  let modelGroup = new THREE.Group();
+  scene.add(modelGroup);
 
-  let bodyMat, leftMat, rightMat, skinMat, frontFaceMat, backFaceMat;
-  let headMesh, torsoMesh, leftArmGroup, rightArmGroup, leftLegGroup, rightLegGroup;
+  let clothingMat = null;
   let autoRotate = true, clock = 0, targetRotationY = 0;
+  let mixer = null;
 
   const compFront = document.createElement('canvas');
   const compBack = document.createElement('canvas');
@@ -583,7 +586,6 @@ window.addEventListener('DOMContentLoaded', () => {
   const frontTex = new THREE.CanvasTexture(compFront);
   const backTex = new THREE.CanvasTexture(compBack);
 
-  // DƏQİQLƏŞDİRİLDİ: 2D bənövşəyi print-guide çərçivəsini 3D box səthinə tam uyğunlaşdıran hesablayıcı matris
   function refreshComposite(side) {
     const comp = side === 'front' ? compFront : compBack;
     const designCanvasEl = document.getElementById(side === 'front' ? 'canvas-front' : 'canvas-back');
@@ -594,17 +596,7 @@ window.addEventListener('DOMContentLoaded', () => {
     ctx.fillStyle = shirtColor;
     ctx.fillRect(0, 0, comp.width, comp.height);
 
-    const grad = ctx.createLinearGradient(0, 0, comp.width, 0);
-    grad.addColorStop(0, 'rgba(0,0,0,0.12)');
-    grad.addColorStop(0.5, 'rgba(255,255,255,0.05)');
-    grad.addColorStop(1, 'rgba(0,0,0,0.15)');
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, comp.width, comp.height);
-
     ctx.save();
-    // 2D kətandakı mərkəz (CANVAS_W/2, CANVAS_H/2) ilə 3D tekstura üzərindəki çap sahəsinin ofsetini 1:1 tarazlayırıq
-    // Print guide ölçüləri CSS-də: width: 160px, height: 210px, kətan isə 340x420-dir.
-    // 3D Box üzərində UV xəritələnməsinin tam mərkəzə düşməsi üçün uyğunlaşdırma matrisi:
     ctx.translate(comp.width / 2, comp.height / 2);
     ctx.drawImage(designCanvasEl, -designCanvasEl.width / 2, -designCanvasEl.height / 2);
     ctx.restore();
@@ -612,95 +604,50 @@ window.addEventListener('DOMContentLoaded', () => {
     (side === 'front' ? frontTex : backTex).needsUpdate = true;
   }
 
-  function update3DModel() {
-    while (shirtGroup.children.length > 0) shirtGroup.remove(shirtGroup.children[0]);
+  // Real insan modelini (GLTF) yükləyirik
+  const loader = new THREE.GLTFLoader();
+  // Qeyd: Öz GLB fayl linkinizi bura daxil edə bilərsiniz (məsələn, Mixamo və ya Ready Player Me modeli)
+  const modelUrl = 'https://raw.githubusercontent.com/mrdoob/three.js/master/examples/models/gltf/RobotExpressive/RobotExpressive.gltf';
 
-    const shirtColor = document.getElementById('shirt-color').value;
-    const rough = 1 - (document.getElementById('gloss-slider').value / 100);
-    const metal = document.getElementById('metal-slider').value / 100;
+  loader.load(modelUrl, (gltf) => {
+    const model = gltf.scene;
+    model.scale.set(0.8, 0.8, 0.8);
+    model.position.set(0, 0, 0);
 
-    bodyMat = new THREE.MeshStandardMaterial({ color: shirtColor, roughness: rough, metalness: metal });
-    leftMat = new THREE.MeshStandardMaterial({ color: shirtColor, roughness: rough, metalness: metal });
-    rightMat = new THREE.MeshStandardMaterial({ color: shirtColor, roughness: rough, metalness: metal });
-    
-    frontFaceMat = new THREE.MeshStandardMaterial({ map: frontTex, color: 0xffffff, roughness: rough, metalness: metal, transparent: true });
-    backFaceMat = new THREE.MeshStandardMaterial({ map: backTex, color: 0xffffff, roughness: rough, metalness: metal, transparent: true });
-    
-    skinMat = new THREE.MeshStandardMaterial({ color: 0xe0ac69, roughness: 0.6 });
-    const hairMat = new THREE.MeshStandardMaterial({ color: 0x2b2b2b, roughness: 0.8 });
-    const pantsMat = new THREE.MeshStandardMaterial({ color: 0x1f2430, roughness: 0.7 });
-    const shoeMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.5 });
-
-    function mesh(geo, mat) { const m = new THREE.Mesh(geo, mat); m.castShadow = true; m.receiveShadow = true; return m; }
-
-    headMesh = mesh(new THREE.SphereGeometry(0.22, 32, 32), skinMat);
-    headMesh.position.set(0, 1.22, 0);
-    headMesh.scale.set(1, 1.2, 1.1);
-    shirtGroup.add(headMesh);
-
-    const hair = mesh(new THREE.SphereGeometry(0.23, 16, 16), hairMat);
-    hair.position.set(0, 1.3, -0.02);
-    hair.scale.set(1.02, 0.8, 1.1);
-    shirtGroup.add(hair);
-
-    const neck = mesh(new THREE.CylinderGeometry(0.09, 0.11, 0.16, 16), skinMat);
-    neck.position.set(0, 0.98, 0);
-    shirtGroup.add(neck);
-
-    const torsoGeo = new THREE.BoxGeometry(1.05, 1.25, 0.38);
-    torsoMesh = new THREE.Mesh(torsoGeo, [bodyMat, bodyMat, bodyMat, bodyMat, frontFaceMat, backFaceMat]);
-    torsoMesh.castShadow = true; torsoMesh.receiveShadow = true;
-    torsoMesh.position.set(0, 0.22, 0);
-    shirtGroup.add(torsoMesh);
-
-    if (currentType === 'hoodie') {
-      const hood = mesh(new THREE.SphereGeometry(0.3, 16, 16), bodyMat);
-      hood.position.set(0, 1.05, -0.14);
-      shirtGroup.add(hood);
-    }
-
-    const sleeveLen = currentType === 'hoodie' ? 0.82 : 0.38;
-    const forearmLen = currentType === 'hoodie' ? 0 : 0.42;
-
-    function buildArm(side) {
-      const group = new THREE.Group();
-      group.position.set(side * 0.61, 0.76, 0);
-      const sleeve = mesh(new THREE.BoxGeometry(0.28, sleeveLen, 0.28), side < 0 ? leftMat : rightMat);
-      sleeve.position.set(0, -sleeveLen / 2, 0);
-      group.add(sleeve);
-      if (forearmLen > 0) {
-        const forearm = mesh(new THREE.BoxGeometry(0.22, forearmLen, 0.22), skinMat);
-        forearm.position.set(0, -sleeveLen - forearmLen / 2, 0);
-        group.add(forearm);
+    // Modelin içindəki geyim/mesh obyektini tapıb teksturanı tətbiq edirik
+    model.traverse((child) => {
+      if (child.isMesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+        // Əgər spesifik geyim mesh-i varsa adını yoxlaya bilərsiniz, məsələn: child.name === 'Body'
+        if (!clothingMat && child.material) {
+          clothingMat = child.material;
+          clothingMat.map = frontTex; // Ön tərəf teksturası default bağlanır
+          clothingMat.needsUpdate = true;
+        }
       }
-      shirtGroup.add(group);
-      return group;
+    });
+
+    modelGroup.add(model);
+
+    // Əgər modeldə animasiyalar varsa
+    if (gltf.animations && gltf.animations.length) {
+      mixer = new THREE.AnimationMixer(model);
+      // Animasiya testləri üçün ilk animasiyanı işə sala bilərsiniz
     }
-    leftArmGroup = buildArm(-1);
-    rightArmGroup = buildArm(1);
 
-    function buildLeg(side) {
-      const group = new THREE.Group();
-      group.position.set(side * 0.22, -0.41, 0);
-      const leg = mesh(new THREE.BoxGeometry(0.28, 1.15, 0.28), pantsMat);
-      leg.position.set(0, -0.575, 0);
-      group.add(leg);
-
-      const shoe = mesh(new THREE.BoxGeometry(0.3, 0.18, 0.45), shoeMat);
-      shoe.position.set(0, -1.2, 0.05);
-      group.add(shoe);
-
-      shirtGroup.add(group);
-      return group;
-    }
-    leftLegGroup = buildLeg(-1);
-    rightLegGroup = buildLeg(1);
-
+    document.getElementById('loader-status').style.display = 'none';
     refreshComposite('front');
     refreshComposite('back');
-  }
-
-  update3DModel();
+  }, (xhr) => {
+    const percent = Math.round((xhr.loaded / xhr.total) * 100);
+    const statusEl = document.getElementById('loader-status');
+    if(statusEl && !isNaN(percent)) statusEl.innerText = `Yüklənir: ${percent}%`;
+  }, (error) => {
+    console.error('Model yüklənmə xətası:', error);
+    const statusEl = document.getElementById('loader-status');
+    if(statusEl) statusEl.innerText = 'Model yüklənmədi! URL-i yoxlayın.';
+  });
 
   canvasFront.on('after:render', () => refreshComposite('front'));
   canvasBack.on('after:render', () => refreshComposite('back'));
@@ -711,38 +658,21 @@ window.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('mousemove', (e) => {
     if (!isDragging) return;
     const delta = e.clientX - prevX; prevX = e.clientX;
-    shirtGroup.rotation.y += delta * 0.01;
-    targetRotationY = shirtGroup.rotation.y;
+    modelGroup.rotation.y += delta * 0.01;
+    targetRotationY = modelGroup.rotation.y;
   });
 
   function animate() {
     requestAnimationFrame(animate);
-    clock += 0.016;
+    const deltaClock = 0.016;
+    clock += deltaClock;
 
-    if (animMode === 'walk') {
-      const swing = Math.sin(clock * 5) * 0.45;
-      if (leftArmGroup) leftArmGroup.rotation.x = swing;
-      if (rightArmGroup) rightArmGroup.rotation.x = -swing;
-      if (leftLegGroup) leftLegGroup.rotation.x = -swing;
-      if (rightLegGroup) rightLegGroup.rotation.x = swing;
-      shirtGroup.position.y = Math.abs(Math.sin(clock * 10)) * 0.05;
-    } else if (animMode === 'dance') {
-      const t = clock * 6;
-      if (leftArmGroup) leftArmGroup.rotation.x = Math.sin(t) * 1.0 - 0.3;
-      if (rightArmGroup) rightArmGroup.rotation.x = Math.sin(t + Math.PI) * 1.0 - 0.3;
-      shirtGroup.rotation.z = Math.sin(t * 0.8) * 0.1;
-      shirtGroup.position.y = Math.abs(Math.sin(t * 1.6)) * 0.08;
-    } else {
-      if (leftArmGroup) { leftArmGroup.rotation.x *= 0.9; leftArmGroup.rotation.z *= 0.9; }
-      if (rightArmGroup) { rightArmGroup.rotation.x *= 0.9; rightArmGroup.rotation.z *= 0.9; }
-      shirtGroup.position.y *= 0.9;
-      shirtGroup.rotation.z *= 0.9;
-    }
+    if (mixer) mixer.update(deltaClock);
 
     if (autoRotate) {
-      shirtGroup.rotation.y += 0.005;
+      modelGroup.rotation.y += 0.005;
     } else if (!isDragging) {
-      shirtGroup.rotation.y += (targetRotationY - shirtGroup.rotation.y) * 0.08;
+      modelGroup.rotation.y += (targetRotationY - modelGroup.rotation.y) * 0.08;
     }
     renderer.render(scene, camera);
   }
