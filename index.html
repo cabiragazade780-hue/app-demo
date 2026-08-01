@@ -3,48 +3,104 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>3D Apparel Design Studio (Fixed & Professional)</title>
+<title>3D Apparel Design Studio</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
 * { box-sizing: border-box; }
-body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f0f17; color: #cdd6f4; margin: 0; padding: 20px; }
-h2 { text-align: center; color: #cba6f7; margin-bottom: 4px; }
-.subtitle { text-align: center; color: #a6adc8; margin-bottom: 24px; font-size: 14px; }
-.main-layout { display: grid; grid-template-columns: 320px 1fr 1fr; gap: 20px; max-width: 1400px; margin: 0 auto; }
-.panel { background: #181825; padding: 20px; border-radius: 12px; border: 1px solid #313244; box-shadow: 0 8px 24px rgba(0,0,0,0.4); display: flex; flex-direction: column; gap: 12px; }
-.controls { height: max-content; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: radial-gradient(circle at 20% 0%, #23233a 0%, #0c0c14 55%, #08080d 100%);
+  color: #e6e6f0;
+  margin: 0;
+  padding: 24px;
+  min-height: 100vh;
+}
+h2 {
+  text-align: center;
+  margin: 0 0 4px;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  background: linear-gradient(90deg, #cba6f7, #89b4fa, #f5c2e7);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.subtitle { text-align: center; color: #8a8aa3; margin-bottom: 28px; font-size: 14px; }
+.main-layout { display: grid; grid-template-columns: 300px 1fr 1fr; gap: 20px; max-width: 1400px; margin: 0 auto; }
+@media (max-width: 1100px) { .main-layout { grid-template-columns: 1fr; max-width: 480px; } }
+
+.panel {
+  background: rgba(24,24,37,0.7);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.07);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.04);
+  display: flex; flex-direction: column; gap: 12px;
+}
 .row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-input, select, button { padding: 9px 12px; border-radius: 6px; border: 1px solid #45475a; background: #11111b; color: #cdd6f4; font-size: 13px; transition: all 0.15s ease; width: 100%; }
-input[type=range] { padding: 0; cursor: pointer; }
+label { font-size: 13px; color: #b8b8d0; }
+input, select, button {
+  padding: 9px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.09);
+  background: rgba(10,10,16,0.7); color: #e6e6f0; font-size: 13px; width: 100%;
+  transition: all .15s ease;
+}
+input[type=range] { padding: 0; cursor: pointer; accent-color: #cba6f7; }
 input[type=color] { height: 36px; padding: 2px; cursor: pointer; }
-input:focus, select:focus { outline: none; border-color: #cba6f7; }
-button { background: #cba6f7; color: #11111b; font-weight: 600; cursor: pointer; border: none; }
-button:hover { background: #b4befe; }
-button:active { transform: scale(0.98); }
-.btn-toggle { background: #89b4fa !important; color: #11111b !important; }
-.btn-danger { background: #f38ba8; color: #11111b; }
-.btn-success { background: #a6e3a1; color: #11111b; }
-.btn-secondary { background: #313244; color: #cdd6f4; }
-.btn-secondary.active { background: #f9e2af; color: #11111b; }
+input:focus, select:focus { outline: none; border-color: #cba6f7; box-shadow: 0 0 0 3px rgba(203,166,247,0.15); }
+button {
+  background: linear-gradient(135deg, #cba6f7, #89b4fa);
+  color: #11111b; font-weight: 700; cursor: pointer; border: none;
+  box-shadow: 0 4px 14px rgba(137,180,250,0.25);
+}
+button:hover { filter: brightness(1.1); transform: translateY(-1px); }
+button:active { transform: scale(0.97); }
+.btn-toggle { background: linear-gradient(135deg, #f5c2e7, #cba6f7) !important; }
+.btn-danger { background: linear-gradient(135deg, #f38ba8, #eb6f92); color: #11111b; }
+.btn-success { background: linear-gradient(135deg, #a6e3a1, #7fd6a3); color: #11111b; }
+.btn-secondary { background: rgba(255,255,255,0.06); color: #cdd6f4; box-shadow: none; }
+.btn-secondary.active { background: linear-gradient(135deg,#f9e2af,#f5c26b); color: #11111b; }
 .filter-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
 .filter-row button { font-size: 11px; padding: 6px 2px; }
-.section-title { font-size: 12px; color: #9399b2; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px; margin-top: 4px; }
-.editor-container { position: relative; width: 100%; height: 420px; background: #11111b; border-radius: 12px; display: flex; justify-content: center; align-items: center; overflow: hidden; border: 1px dashed #45475a; }
-.apparel-svg { position: absolute; width: 300px; height: 400px; z-index: 1; pointer-events: none; opacity: 0.3; }
-.canvas-wrapper { position: absolute !important; z-index: 2; width: 260px; height: 351px; }
-.canvas-container { width: 100% !important; height: 100% !important; }
-canvas { width: 100% !important; height: 100% !important; }
-#three-view { width: 100%; height: 420px; border-radius: 12px; background: radial-gradient(circle at 50% 30%, #1e1e2e, #050508); cursor: grab; overflow: hidden; }
+.section-title { font-size: 11px; color: #8a8aa3; text-transform: uppercase; font-weight: 700; letter-spacing: 0.8px; margin-top: 6px; }
+.editor-container {
+  position: relative; width: 100%; height: 420px;
+  background: linear-gradient(160deg,#14141f,#0a0a10);
+  border-radius: 14px; display: flex; justify-content: center; align-items: center;
+  overflow: hidden; border: 1px dashed rgba(255,255,255,0.12);
+  transition: border-color .2s;
+}
+.editor-container.drag-over { border-color: #cba6f7; box-shadow: inset 0 0 0 2px rgba(203,166,247,0.4); }
+.apparel-svg { position: absolute; width: 300px; height: 400px; z-index: 1; pointer-events: none; opacity: 0.25; }
+.canvas-wrapper { position: absolute !important; z-index: 2; }
+#three-view {
+  width: 100%; height: 420px; border-radius: 14px;
+  background: radial-gradient(circle at 50% 25%, #23233a, #050508 75%);
+  cursor: grab; overflow: hidden;
+}
 #three-view:active { cursor: grabbing; }
 .view-selector { display: flex; gap: 8px; }
 .hidden { display: none !important; }
-.hint { font-size: 12px; color: #6c7086; text-align: center; margin: 0; }
-.effects-panel { display: none; flex-direction: column; gap: 8px; background: #11111b; padding: 12px; border-radius: 8px; border: 1px solid #313244; }
+.hint { font-size: 11.5px; color: #6c6c85; text-align: center; margin: 0; line-height: 1.5; }
+.effects-panel { display: none; flex-direction: column; gap: 8px; background: rgba(10,10,16,0.6); padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.06); }
 .effects-panel.show { display: flex; }
 .range-label { display: flex; justify-content: space-between; font-size: 12px; color: #a6adc8; }
-hr { border: 0; border-top: 1px solid #313244; margin: 4px 0; width: 100%; }
-#toast { position: fixed; bottom: 20px; right: 20px; background: #f38ba8; color: #11111b; padding: 12px 20px; border-radius: 8px; font-weight: bold; display: none; z-index: 1000; }
+hr { border: 0; border-top: 1px solid rgba(255,255,255,0.08); margin: 2px 0; width: 100%; }
+#toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: rgba(24,24,37,0.95); backdrop-filter: blur(10px);
+  color: #e6e6f0; padding: 12px 22px; border-radius: 30px; font-weight: 600; font-size: 13px;
+  border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  display: none; z-index: 1000; opacity: 0; transition: opacity .25s, transform .25s;
+}
+#toast.show { display: block; opacity: 1; transform: translateX(-50%) translateY(0); }
+.paste-zone {
+  border: 1px dashed rgba(255,255,255,0.15); border-radius: 8px; padding: 10px; text-align: center;
+  font-size: 12px; color: #8a8aa3;
+}
 </style>
 </head>
 <body>
@@ -52,7 +108,7 @@ hr { border: 0; border-top: 1px solid #313244; margin: 4px 0; width: 100%; }
 <div id="toast"></div>
 
 <h2>3D Apparel Design Studio</h2>
-<p class="subtitle">Dizaynını yarat, yüksək dəqiqliklə 3D-də canlı gör və eksport et</p>
+<p class="subtitle">Dizaynını yarat, 3D-də canlı gör, HD keyfiyyətdə ixrac et</p>
 
 <div class="main-layout">
   <div class="panel controls">
@@ -65,65 +121,62 @@ hr { border: 0; border-top: 1px solid #313244; margin: 4px 0; width: 100%; }
     </div>
     <div class="row">
       <label>Geyimin Rəngi:</label>
-      <input type="color" id="shirt-color" value="#1e1e2e">
+      <input type="color" id="shirt-color" value="#89b4fa">
     </div>
 
     <div class="section-title">Material Fakturası</div>
-    <div class="range-label"><span>Parıltı (Roughness)</span><span id="gloss-val">80%</span></div>
-    <input type="range" id="gloss-slider" min="0" max="100" value="20">
-    <div class="range-label"><span>Metallik</span><span id="metal-val">0%</span></div>
-    <input type="range" id="metal-slider" min="0" max="100" value="0">
+    <div class="range-label"><span>Parıltı</span><span id="gloss-val">50%</span></div>
+    <input type="range" id="gloss-slider" min="0" max="100" value="50">
+    <div class="range-label"><span>Metallik</span><span id="metal-val">10%</span></div>
+    <input type="range" id="metal-slider" min="0" max="100" value="10">
 
     <hr>
-
-    <label><b>İdarə Olunan Tərəf:</b></label>
+    <label><b>Tərəf Seçimi:</b></label>
     <div class="view-selector">
       <button id="btn-front" class="btn-toggle">Ön Tərəf</button>
       <button id="btn-back">Arxa Tərəf</button>
     </div>
 
     <hr>
-
     <label><b>Mətn Əlavə Et:</b></label>
     <input type="text" id="text-input" placeholder="Yazını daxil edin...">
     <div class="row">
-      <select id="text-font" style="width: 60%;">
+      <select id="text-font" style="width:60%;">
         <option value="Arial">Arial</option>
         <option value="Impact">Impact</option>
         <option value="Courier New">Courier</option>
         <option value="Georgia">Georgia</option>
       </select>
-      <input type="color" id="text-color" value="#ffffff" style="width: 35%;">
+      <input type="color" id="text-color" value="#ffffff" style="width:35%;">
     </div>
     <button id="add-text-btn">Mətni Əlavə Et</button>
 
     <hr>
-
-    <label><b>Şəkil Yüklə:</b></label>
+    <label><b>Şəkil:</b></label>
     <input type="file" id="image-upload" accept="image/*">
+    <div class="paste-zone">📋 Brauzerdən şəkli kopyala (sağ klik → Copy image) və bura klikləyib <b>Ctrl+V</b> et<br>və ya şəkli birbaşa dizayn sahəsinə sürüklə</div>
     <div class="row" style="gap:5px;">
-      <input type="text" id="image-url-input" placeholder="Şəkil URL-i...">
-      <button id="image-url-btn" class="btn-secondary" style="width: 40%;">Yüklə</button>
+      <input type="text" id="image-url-input" placeholder="Şəkil URL-i (bəzən işləməyə bilər)...">
+      <button id="image-url-btn" class="btn-secondary" style="width:40%;">Yüklə</button>
     </div>
 
     <hr>
-
     <div id="effects-panel" class="effects-panel">
       <div class="section-title">Element Parametrləri</div>
       <div class="range-label"><span>Şəffaflıq</span><span id="opacity-val">100%</span></div>
       <input type="range" id="opacity-slider" min="0" max="100" value="100">
-
       <div class="row">
-        <label><input type="checkbox" id="shadow-toggle"> Kölgə</label>
+        <label><input type="checkbox" id="shadow-toggle" style="width:auto;"> Kölgə</label>
         <input type="color" id="shadow-color" value="#000000" style="width:40px; height:28px;">
       </div>
-
       <div class="section-title">Filtr</div>
       <div class="filter-row">
         <button class="btn-secondary" data-filter="none">Normal</button>
         <button class="btn-secondary" data-filter="gray">Ağ-Qara</button>
         <button class="btn-secondary" data-filter="sepia">Sepia</button>
         <button class="btn-secondary" data-filter="invert">İnvert</button>
+        <button class="btn-secondary" data-filter="bright">Parlaq</button>
+        <button class="btn-secondary" data-filter="contrast">Kontrast</button>
       </div>
     </div>
 
@@ -134,27 +187,28 @@ hr { border: 0; border-top: 1px solid #313244; margin: 4px 0; width: 100%; }
 
   <div class="panel">
     <h3 style="margin:0; text-align:center;" id="canvas-title">2D Dizayn (Ön Tərəf)</h3>
-    <div class="editor-container">
+    <div class="editor-container" id="editor-container">
       <svg class="apparel-svg" viewBox="0 0 100 100">
-        <path id="apparel-path" fill="#1e1e2e" stroke="#ffffff" stroke-width="0.5" d="M 30,10 L 40,17 C 45,19 55,19 60,17 L 70,10 L 90,25 L 80,40 L 73,33 L 73,90 L 27,90 L 27,33 L 20,40 L 10,25 Z"/>
+        <path id="apparel-path" fill="#89b4fa" stroke="#fff" stroke-width="0.5" d="M 30,10 L 40,17 C 45,19 55,19 60,17 L 70,10 L 90,25 L 80,40 L 73,33 L 73,90 L 27,90 L 27,33 L 20,40 L 10,25 Z"/>
       </svg>
       <div id="front-canvas-container" class="canvas-wrapper">
-        <canvas id="canvas-front" width="1000" height="1350"></canvas>
+        <canvas id="canvas-front" width="260" height="351"></canvas>
       </div>
       <div id="back-canvas-container" class="canvas-wrapper hidden">
-        <canvas id="canvas-back" width="1000" height="1350"></canvas>
+        <canvas id="canvas-back" width="260" height="351"></canvas>
       </div>
     </div>
-    <p class="hint">Təsviri və ya mətni sürüşdürün, miqyaslandırın.</p>
+    <p class="hint">Element seç, sürüşdür, künclərdən miqyaslandır. Bu sahə 3D modeldəki çap sahəsinə tam uyğundur.</p>
   </div>
 
   <div class="panel">
     <h3 style="margin:0; text-align:center;">3D Modelləmə</h3>
     <div id="three-view"></div>
     <div class="row">
-      <button id="btn-autorotate" class="btn-secondary active">🔄 Auto-Rotate</button>
-      <button id="btn-walk" class="btn-secondary">🚶 Animasiya</button>
+      <button id="btn-autorotate" class="btn-secondary active">🔄 Fırlanma</button>
+      <button id="btn-walk" class="btn-secondary">🚶 Yeriyiş</button>
     </div>
+    <p class="hint">Siçanla sürüşdür — əl ilə çevir</p>
   </div>
 </div>
 
@@ -162,26 +216,29 @@ hr { border: 0; border-top: 1px solid #313244; margin: 4px 0; width: 100%; }
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.innerText = msg;
-  t.style.display = 'block';
-  setTimeout(() => { t.style.display = 'none'; }, 3000);
+  t.classList.add('show');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
 }
 
 window.addEventListener('DOMContentLoaded', () => {
   let currentSide = 'front';
   let currentType = 'tshirt';
+  const CANVAS_W = 260, CANVAS_H = 351;
 
-  // ŞƏFFAFLIQ FIX: Canvas fonu tam şəkildə şəkilsiz/şəffaf olmalıdır
-  const fabricConfig = { 
-    backgroundColor: null, 
-    preserveObjectStacking: true, 
-    selectionColor: 'rgba(203,166,247,0.3)', 
-    cornerColor: '#cba6f7', 
-    cornerSize: 14 
+  const fabricConfig = {
+    backgroundColor: null,
+    preserveObjectStacking: true,
+    selectionColor: 'rgba(203,166,247,0.25)',
+    selectionBorderColor: '#cba6f7',
+    cornerColor: '#cba6f7',
+    cornerStyle: 'circle',
+    cornerSize: 12,
+    transparentCorners: false
   };
-  
+
   const canvasFront = new fabric.Canvas('canvas-front', fabricConfig);
   const canvasBack = new fabric.Canvas('canvas-back', fabricConfig);
-
   function getActiveCanvas() { return currentSide === 'front' ? canvasFront : canvasBack; }
 
   const svgPaths = {
@@ -201,6 +258,16 @@ window.addEventListener('DOMContentLoaded', () => {
     if (bodyMat) bodyMat.color.set(val);
     if (leftMat) leftMat.color.set(val);
     if (rightMat) rightMat.color.set(val);
+  });
+
+  document.getElementById('gloss-slider').addEventListener('input', (e) => {
+    document.getElementById('gloss-val').innerText = e.target.value + '%';
+    const rough = 1 - (e.target.value / 100);
+    [bodyMat, leftMat, rightMat].forEach(m => { if (m) m.roughness = rough; });
+  });
+  document.getElementById('metal-slider').addEventListener('input', (e) => {
+    document.getElementById('metal-val').innerText = e.target.value + '%';
+    [bodyMat, leftMat, rightMat].forEach(m => { if (m) m.metalness = e.target.value / 100; });
   });
 
   document.getElementById('btn-front').addEventListener('click', () => {
@@ -242,7 +309,9 @@ window.addEventListener('DOMContentLoaded', () => {
     const txt = document.getElementById('text-input').value;
     if (!txt) return;
     const text = new fabric.Text(txt, {
-      left: 300, top: 300, fontSize: 72, fontWeight: 'bold',
+      left: CANVAS_W / 2, top: CANVAS_H / 2,
+      originX: 'center', originY: 'center',
+      fontSize: 26, fontWeight: 'bold',
       fill: document.getElementById('text-color').value,
       fontFamily: document.getElementById('text-font').value
     });
@@ -252,43 +321,81 @@ window.addEventListener('DOMContentLoaded', () => {
     c.renderAll();
   });
 
+  // ---- Mərkəzi şəkil əlavəetmə funksiyası (fayl / paste / drag-drop hamısı buradan keçir) ----
+  function addImageFromDataUrl(dataUrl) {
+    fabric.Image.fromURL(dataUrl, (img) => {
+      img.scaleToWidth(CANVAS_W * 0.4);
+      img.set({ left: CANVAS_W / 2, top: CANVAS_H / 2, originX: 'center', originY: 'center' });
+      const c = getActiveCanvas();
+      c.add(img); c.setActiveObject(img); c.renderAll();
+      showToast('Şəkil əlavə olundu ✓');
+    });
+  }
+
   document.getElementById('image-upload').addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = (f) => {
-      fabric.Image.fromURL(f.target.result, (img) => {
-        img.scaleToWidth(400);
-        img.set({ left: 300, top: 300 });
-        const c = getActiveCanvas();
-        c.add(img); c.setActiveObject(img); c.renderAll();
-      });
-    };
+    reader.onload = (f) => addImageFromDataUrl(f.target.result);
     reader.readAsDataURL(file);
     e.target.value = '';
   });
 
-  // CORS və ALERT FIX
-  document.getElementById('image-url-btn').addEventListener('click', () => {
-    let url = document.getElementById('image-url-input').value.trim();
-    if (!url) return;
-
-    if (!url.startsWith('https://corsproxy.io/?')) {
-      url = 'https://corsproxy.io/?' + encodeURIComponent(url);
-    }
-
-    fabric.Image.fromURL(url, (img, isError) => {
-      if (isError || !img || !img.width) { 
-        showToast('XƏTÂ: Şəkil yüklənə bilmədi.'); 
-        return; 
+  // ---- Clipboard Paste (brauzerdən kopyala -> Ctrl+V) ----
+  window.addEventListener('paste', (e) => {
+    const items = e.clipboardData && e.clipboardData.items;
+    if (!items) return;
+    for (const item of items) {
+      if (item.type.indexOf('image') !== -1) {
+        const blob = item.getAsFile();
+        const reader = new FileReader();
+        reader.onload = (f) => addImageFromDataUrl(f.target.result);
+        reader.readAsDataURL(blob);
       }
-      img.scaleToWidth(400);
-      img.set({ left: 300, top: 300 });
-      const c = getActiveCanvas();
-      c.add(img); 
-      c.setActiveObject(img); 
-      c.renderAll();
-    }, { crossOrigin: 'anonymous' });
+    }
+  });
+
+  // ---- Drag & Drop ----
+  const editorContainer = document.getElementById('editor-container');
+  editorContainer.addEventListener('dragover', (e) => { e.preventDefault(); editorContainer.classList.add('drag-over'); });
+  editorContainer.addEventListener('dragleave', () => editorContainer.classList.remove('drag-over'));
+  editorContainer.addEventListener('drop', (e) => {
+    e.preventDefault();
+    editorContainer.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (f) => addImageFromDataUrl(f.target.result);
+      reader.readAsDataURL(file);
+    } else {
+      showToast('Yalnız şəkil fayllarını sürüklə');
+    }
+  });
+
+  // ---- URL-dən yükləmə (bir neçə proksi ilə cəhd, uğursuz ola bilər — CORS brauzer qaydasıdır) ----
+  document.getElementById('image-url-btn').addEventListener('click', () => {
+    const rawUrl = document.getElementById('image-url-input').value.trim();
+    if (!rawUrl) return;
+    const proxies = [
+      u => 'https://corsproxy.io/?url=' + encodeURIComponent(u),
+      u => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u),
+      u => u
+    ];
+    let i = 0;
+    function tryNext() {
+      if (i >= proxies.length) { showToast('Alınmadı — bunun əvəzinə şəkli kopyala (Ctrl+V) et'); return; }
+      const url = proxies[i](rawUrl);
+      i++;
+      fabric.Image.fromURL(url, (img, isError) => {
+        if (isError || !img || !img.width) { tryNext(); return; }
+        img.scaleToWidth(CANVAS_W * 0.4);
+        img.set({ left: CANVAS_W / 2, top: CANVAS_H / 2, originX: 'center', originY: 'center' });
+        const c = getActiveCanvas();
+        c.add(img); c.setActiveObject(img); c.renderAll();
+        showToast('Şəkil əlavə olundu ✓');
+      }, { crossOrigin: 'anonymous' });
+    }
+    tryNext();
   });
 
   document.getElementById('delete-btn').addEventListener('click', () => {
@@ -296,47 +403,112 @@ window.addEventListener('DOMContentLoaded', () => {
     const obj = c.getActiveObject();
     if (obj) { c.remove(obj); c.renderAll(); }
   });
+  window.addEventListener('keydown', (e) => {
+    const tag = document.activeElement.tagName;
+    if ((e.key === 'Delete' || e.key === 'Backspace') && tag !== 'INPUT' && tag !== 'TEXTAREA') {
+      const c = getActiveCanvas();
+      const obj = c.getActiveObject();
+      if (obj) { c.remove(obj); c.renderAll(); }
+    }
+  });
 
   document.getElementById('clear-btn').addEventListener('click', () => getActiveCanvas().clear());
 
-  // FİLTR VƏ EFFEKT FIX
+  document.getElementById('download-btn').addEventListener('click', () => {
+    const dataURL = getActiveCanvas().toDataURL({ format: 'png', quality: 1, multiplier: 3 });
+    const a = document.createElement('a');
+    a.download = `design-${currentSide}-HD.png`;
+    a.href = dataURL; a.click();
+  });
+
+  // ---- Effekt Paneli ----
+  const effectsPanel = document.getElementById('effects-panel');
+  const opacitySlider = document.getElementById('opacity-slider');
+  const shadowToggle = document.getElementById('shadow-toggle');
+  const shadowColor = document.getElementById('shadow-color');
+
+  function refreshEffectsPanel(obj) {
+    if (!obj) { effectsPanel.classList.remove('show'); return; }
+    effectsPanel.classList.add('show');
+    opacitySlider.value = Math.round((obj.opacity ?? 1) * 100);
+    document.getElementById('opacity-val').innerText = opacitySlider.value + '%';
+    shadowToggle.checked = !!obj.shadow;
+  }
+  function bindSelection(c) {
+    c.on('selection:created', () => refreshEffectsPanel(c.getActiveObject()));
+    c.on('selection:updated', () => refreshEffectsPanel(c.getActiveObject()));
+    c.on('selection:cleared', () => refreshEffectsPanel(null));
+  }
+  bindSelection(canvasFront);
+  bindSelection(canvasBack);
+
+  opacitySlider.addEventListener('input', (e) => {
+    const obj = getActiveCanvas().getActiveObject();
+    document.getElementById('opacity-val').innerText = e.target.value + '%';
+    if (obj) { obj.set('opacity', e.target.value / 100); getActiveCanvas().renderAll(); }
+  });
+  shadowToggle.addEventListener('change', () => {
+    const obj = getActiveCanvas().getActiveObject();
+    if (!obj) return;
+    obj.set('shadow', shadowToggle.checked ? new fabric.Shadow({ color: shadowColor.value, blur: 14, offsetX: 6, offsetY: 6 }) : null);
+    getActiveCanvas().renderAll();
+  });
+  shadowColor.addEventListener('input', () => {
+    const obj = getActiveCanvas().getActiveObject();
+    if (obj && obj.shadow) { obj.shadow.color = shadowColor.value; getActiveCanvas().renderAll(); }
+  });
+
   document.querySelectorAll('.filter-row button').forEach(btn => {
     btn.addEventListener('click', () => {
       const c = getActiveCanvas();
       const obj = c.getActiveObject();
-      if (!obj || obj.type !== 'image') { 
-        showToast('Əvvəlcə şəklin üzərinə klikləyin!'); 
-        return; 
-      }
+      if (!obj || obj.type !== 'image') { showToast('Əvvəlcə şəklin üzərinə klikləyin'); return; }
       const type = btn.dataset.filter;
       obj.filters = [];
       if (type === 'gray') obj.filters.push(new fabric.Image.filters.Grayscale());
       if (type === 'sepia') obj.filters.push(new fabric.Image.filters.Sepia());
       if (type === 'invert') obj.filters.push(new fabric.Image.filters.Invert());
-      
+      if (type === 'bright') obj.filters.push(new fabric.Image.filters.Brightness({ brightness: 0.25 }));
+      if (type === 'contrast') obj.filters.push(new fabric.Image.filters.Contrast({ contrast: 0.3 }));
       obj.applyFilters();
       c.renderAll();
     });
   });
 
-  // ================= THREE.JS MODEL DÜZƏLİŞİ =================
+  // ================= THREE.JS =================
   const container = document.getElementById('three-view');
   const scene = new THREE.Scene();
 
   const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
-  camera.position.set(0, 0.2, 4.5);
+  camera.position.set(0, 0.15, 4.6);
 
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setSize(container.clientWidth, container.clientHeight);
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   container.appendChild(renderer.domElement);
 
-  // GÜCLƏNDİRİLMİŞ İŞIQ
-  const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
-  scene.add(ambientLight);
-  const dirLight1 = new THREE.DirectionalLight(0xffffff, 1.0);
-  dirLight1.position.set(2, 4, 3);
-  scene.add(dirLight1);
+  scene.add(new THREE.HemisphereLight(0x8888ff, 0x110022, 0.6));
+  const keyLight = new THREE.DirectionalLight(0xffffff, 1.15);
+  keyLight.position.set(2.2, 4, 3);
+  keyLight.castShadow = true;
+  keyLight.shadow.mapSize.set(1024, 1024);
+  scene.add(keyLight);
+  const rimLight = new THREE.DirectionalLight(0xcba6f7, 0.5);
+  rimLight.position.set(-3, 1.5, -3);
+  scene.add(rimLight);
+  scene.add(new THREE.AmbientLight(0xffffff, 0.35));
+
+  // Yerdə yumşaq kölgə üçün "shadow catcher" zəmin
+  const floor = new THREE.Mesh(
+    new THREE.PlaneGeometry(6, 6),
+    new THREE.ShadowMaterial({ opacity: 0.35 })
+  );
+  floor.rotation.x = -Math.PI / 2;
+  floor.position.y = -1.65;
+  floor.receiveShadow = true;
+  scene.add(floor);
 
   let shirtGroup = new THREE.Group();
   scene.add(shirtGroup);
@@ -349,26 +521,49 @@ window.addEventListener('DOMContentLoaded', () => {
     while (shirtGroup.children.length > 0) shirtGroup.remove(shirtGroup.children[0]);
 
     const shirtColor = document.getElementById('shirt-color').value;
-    bodyMat = new THREE.MeshStandardMaterial({ color: shirtColor, roughness: 0.5, metalness: 0.1 });
-    leftMat = new THREE.MeshStandardMaterial({ color: shirtColor, roughness: 0.5, metalness: 0.1 });
-    rightMat = new THREE.MeshStandardMaterial({ color: shirtColor, roughness: 0.5, metalness: 0.1 });
-    skinMat = new THREE.MeshStandardMaterial({ color: 0xd4a373, roughness: 0.6 });
-    const pantsMat = new THREE.MeshStandardMaterial({ color: 0x11111b, roughness: 0.8 });
+    const rough = 1 - (document.getElementById('gloss-slider').value / 100);
+    const metal = document.getElementById('metal-slider').value / 100;
 
-    const head = new THREE.Mesh(new THREE.SphereGeometry(0.24, 32, 32), skinMat);
+    bodyMat = new THREE.MeshStandardMaterial({ color: shirtColor, roughness: rough, metalness: metal });
+    leftMat = new THREE.MeshStandardMaterial({ color: shirtColor, roughness: rough, metalness: metal });
+    rightMat = new THREE.MeshStandardMaterial({ color: shirtColor, roughness: rough, metalness: metal });
+    skinMat = new THREE.MeshStandardMaterial({ color: 0xd4a373, roughness: 0.7 });
+    const pantsMat = new THREE.MeshStandardMaterial({ color: 0x1c1c28, roughness: 0.7 });
+
+    function mesh(geo, mat) { const m = new THREE.Mesh(geo, mat); m.castShadow = true; m.receiveShadow = true; return m; }
+
+    const head = mesh(new THREE.SphereGeometry(0.25, 24, 24), skinMat);
     head.position.set(0, 1.15, 0);
     shirtGroup.add(head);
+    const neck = mesh(new THREE.CylinderGeometry(0.1, 0.12, 0.15, 12), skinMat);
+    neck.position.set(0, 0.92, 0);
+    shirtGroup.add(neck);
 
-    const torso = new THREE.Mesh(new THREE.BoxGeometry(1.1, 1.3, 0.35), bodyMat);
+    const torso = mesh(new THREE.BoxGeometry(1.1, 1.3, 0.32), bodyMat);
     torso.position.set(0, 0.18, 0);
     shirtGroup.add(torso);
+
+    if (currentType === 'hoodie') {
+      const hood = mesh(new THREE.SphereGeometry(0.32, 16, 16), bodyMat);
+      hood.position.set(0, 1.02, -0.12);
+      shirtGroup.add(hood);
+    }
+
+    const sleeveLen = currentType === 'hoodie' ? 0.85 : 0.42;
+    const forearmLen = currentType === 'hoodie' ? 0 : 0.4;
 
     function buildArm(side) {
       const group = new THREE.Group();
       group.position.set(side * 0.63, 0.75, 0);
-      const sleeve = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.8, 0.28), side < 0 ? leftMat : rightMat);
-      sleeve.position.set(0, -0.4, 0);
+      const sleeve = mesh(new THREE.BoxGeometry(0.3, sleeveLen, 0.3), side < 0 ? leftMat : rightMat);
+      sleeve.position.set(0, -sleeveLen / 2, 0);
       group.add(sleeve);
+      if (forearmLen > 0) {
+        const forearm = mesh(new THREE.BoxGeometry(0.24, forearmLen, 0.24), skinMat);
+        forearm.position.set(0, -sleeveLen - forearmLen / 2, 0);
+        group.add(forearm);
+      }
+      group.rotation.z = side * 0.1;
       shirtGroup.add(group);
       return group;
     }
@@ -378,8 +573,8 @@ window.addEventListener('DOMContentLoaded', () => {
     function buildLeg(side) {
       const group = new THREE.Group();
       group.position.set(side * 0.25, -0.47, 0);
-      const leg = new THREE.Mesh(new THREE.BoxGeometry(0.3, 1.0, 0.3), pantsMat);
-      leg.position.set(0, -0.5, 0);
+      const leg = mesh(new THREE.BoxGeometry(0.32, 1.15, 0.32), pantsMat);
+      leg.position.set(0, -0.575, 0);
       group.add(leg);
       shirtGroup.add(group);
       return group;
@@ -389,32 +584,16 @@ window.addEventListener('DOMContentLoaded', () => {
 
     frontTex = new THREE.CanvasTexture(document.getElementById('canvas-front'));
     backTex = new THREE.CanvasTexture(document.getElementById('canvas-back'));
-    
-    [frontTex, backTex].forEach(tex => {
-      tex.minFilter = THREE.LinearFilter;
-      tex.magFilter = THREE.LinearFilter;
-    });
+    [frontTex, backTex].forEach(tex => { tex.minFilter = THREE.LinearFilter; tex.magFilter = THREE.LinearFilter; });
 
+    // Kanvas ölçüsü (260x351) plane ölçüsünə (1.0 x 1.35) tam uyğundur — eyni aspekt nisbəti
     const printGeo = new THREE.PlaneGeometry(1.0, 1.35);
 
-    // QARA KUTU VƏ Z-FIGHTING FIX: alphaTest + depthWrite + transparent
-    const printFrontMat = new THREE.MeshBasicMaterial({ 
-      map: frontTex, 
-      transparent: true, 
-      alphaTest: 0.05, 
-      depthWrite: false 
-    });
-    const printFront = new THREE.Mesh(printGeo, printFrontMat);
+    const printFront = new THREE.Mesh(printGeo, new THREE.MeshBasicMaterial({ map: frontTex, transparent: true, alphaTest: 0.05, depthWrite: false }));
     printFront.position.set(0, 0.18, 0.178);
     shirtGroup.add(printFront);
 
-    const printBackMat = new THREE.MeshBasicMaterial({ 
-      map: backTex, 
-      transparent: true, 
-      alphaTest: 0.05, 
-      depthWrite: false 
-    });
-    const printBack = new THREE.Mesh(printGeo, printBackMat);
+    const printBack = new THREE.Mesh(printGeo, new THREE.MeshBasicMaterial({ map: backTex, transparent: true, alphaTest: 0.05, depthWrite: false }));
     printBack.position.set(0, 0.18, -0.178);
     printBack.rotation.y = Math.PI;
     shirtGroup.add(printBack);
@@ -434,11 +613,42 @@ window.addEventListener('DOMContentLoaded', () => {
     shirtGroup.rotation.y += delta * 0.01;
     targetRotationY = shirtGroup.rotation.y;
   });
+  container.addEventListener('touchstart', (e) => { isDragging = true; prevX = e.touches[0].clientX; setAutoRotate(false); });
+  window.addEventListener('touchend', () => isDragging = false);
+  window.addEventListener('touchmove', (e) => {
+    if (!isDragging) return;
+    const delta = e.touches[0].clientX - prevX; prevX = e.touches[0].clientX;
+    shirtGroup.rotation.y += delta * 0.01;
+    targetRotationY = shirtGroup.rotation.y;
+  });
+
+  window.addEventListener('resize', () => {
+    const w = container.clientWidth, h = container.clientHeight;
+    camera.aspect = w / h; camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
+  });
 
   function animate() {
     requestAnimationFrame(animate);
+
+    if (walking) {
+      walkClock += 0.12;
+      const swing = Math.sin(walkClock) * 0.5;
+      if (leftArmGroup) leftArmGroup.rotation.x = swing;
+      if (rightArmGroup) rightArmGroup.rotation.x = -swing;
+      if (leftLegGroup) leftLegGroup.rotation.x = -swing;
+      if (rightLegGroup) rightLegGroup.rotation.x = swing;
+      shirtGroup.position.y = Math.abs(Math.sin(walkClock * 2)) * 0.06;
+    } else {
+      if (leftArmGroup) leftArmGroup.rotation.x *= 0.9;
+      if (rightArmGroup) rightArmGroup.rotation.x *= 0.9;
+      if (leftLegGroup) leftLegGroup.rotation.x *= 0.9;
+      if (rightLegGroup) rightLegGroup.rotation.x *= 0.9;
+      shirtGroup.position.y *= 0.9;
+    }
+
     if (autoRotate) {
-      shirtGroup.rotation.y += 0.005;
+      shirtGroup.rotation.y += 0.006;
     } else if (!isDragging) {
       shirtGroup.rotation.y += (targetRotationY - shirtGroup.rotation.y) * 0.08;
     }
