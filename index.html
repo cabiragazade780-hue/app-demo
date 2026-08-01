@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>3D Apparel Design Studio - Humanoid</title>
+<title>3D Apparel Design Studio</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
@@ -11,7 +11,10 @@
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   background: radial-gradient(circle at 20% 0%, #23233a 0%, #0c0c14 55%, #08080d 100%);
-  color: #e6e6f0; margin: 0; padding: 24px; min-height: 100vh;
+  color: #e6e6f0;
+  margin: 0;
+  padding: 24px;
+  min-height: 100vh;
 }
 h2 {
   text-align: center; margin: 0 0 4px; font-size: 28px; font-weight: 800; letter-spacing: -0.5px;
@@ -32,7 +35,8 @@ h2 {
 label { font-size: 13px; color: #b8b8d0; }
 input, select, button {
   padding: 9px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.09);
-  background: rgba(10,10,16,0.7); color: #e6e6f0; font-size: 13px; width: 100%; transition: all .15s ease;
+  background: rgba(10,10,16,0.7); color: #e6e6f0; font-size: 13px; width: 100%;
+  transition: all .15s ease;
 }
 input[type=range] { padding: 0; cursor: pointer; accent-color: #cba6f7; }
 input[type=color] { height: 36px; padding: 2px; cursor: pointer; }
@@ -51,29 +55,31 @@ button:active { transform: scale(0.97); }
 .btn-mini { padding: 7px 6px; font-size: 11px; }
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
 .section-title { font-size: 11px; color: #8a8aa3; text-transform: uppercase; font-weight: 700; letter-spacing: 0.8px; margin-top: 6px; }
 .editor-container {
   position: relative; width: 100%; height: 440px;
-  background: repeating-linear-gradient(45deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 2px, transparent 2px, transparent 6px), linear-gradient(160deg,#16161f,#0a0a10);
+  background:
+    repeating-linear-gradient(45deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 2px, transparent 2px, transparent 6px),
+    linear-gradient(160deg,#16161f,#0a0a10);
   border-radius: 14px; display: flex; justify-content: center; align-items: center;
-  overflow: hidden; border: 1px dashed rgba(255,255,255,0.12);
+  overflow: hidden; border: 1px dashed rgba(255,255,255,0.12); transition: border-color .2s;
 }
-.apparel-svg { position: absolute; width: 300px; height: 380px; z-index: 1; pointer-events: none; opacity: 0.35; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+.editor-container.drag-over { border-color: #cba6f7; box-shadow: inset 0 0 0 2px rgba(203,166,247,0.4); }
+.apparel-svg { position: absolute; width: 300px; height: 400px; z-index: 1; pointer-events: none; opacity: 0.25; }
 .print-guide {
   position: absolute; z-index: 1; pointer-events: none;
-  border: 1.5px dashed rgba(203,166,247,0.6); border-radius: 6px;
-  left: 50%; top: 50%; transform: translate(-50%, -50%); width: 160px; height: 210px;
+  border: 1.5px dashed rgba(203,166,247,0.45); border-radius: 6px;
 }
 .print-guide::after {
-  content: 'Çap Sahəsi'; position: absolute; top: -18px; left: 0;
-  font-size: 9.5px; color: rgba(203,166,247,0.8); white-space: nowrap;
+  content: 'Tövsiyə olunan çap sahəsi'; position: absolute; top: -18px; left: 0;
+  font-size: 9.5px; color: rgba(203,166,247,0.6); white-space: nowrap;
 }
-.canvas-wrapper { position: absolute !important; z-index: 2; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+.canvas-wrapper { position: absolute !important; z-index: 2; }
 #three-view {
   width: 100%; height: 440px; border-radius: 14px;
-  background: radial-gradient(circle at 50% 25%, #2a2a42, #08080d 75%);
+  background: radial-gradient(circle at 50% 25%, #23233a, #050508 75%);
   cursor: grab; overflow: hidden;
-  position: relative;
 }
 #three-view:active { cursor: grabbing; }
 .view-selector { display: flex; gap: 8px; }
@@ -87,10 +93,14 @@ hr { border: 0; border-top: 1px solid rgba(255,255,255,0.08); margin: 2px 0; wid
   position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
   background: rgba(24,24,37,0.95); backdrop-filter: blur(10px); color: #e6e6f0; padding: 12px 22px;
   border-radius: 30px; font-weight: 600; font-size: 13px; border: 1px solid rgba(255,255,255,0.1);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: none; z-index: 1000; opacity: 0; transition: opacity .25s, transform .25s;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: none; z-index: 1000; opacity: 0;
+  transition: opacity .25s, transform .25s;
 }
 #toast.show { display: block; opacity: 1; transform: translateX(-50%) translateY(0); }
-.paste-zone { border: 1px dashed rgba(255,255,255,0.15); border-radius: 8px; padding: 10px; text-align: center; font-size: 12px; color: #8a8aa3; }
+.paste-zone {
+  border: 1px dashed rgba(255,255,255,0.15); border-radius: 8px; padding: 10px; text-align: center;
+  font-size: 12px; color: #8a8aa3;
+}
 .sticker-row { display: flex; gap: 6px; flex-wrap: wrap; }
 .sticker-btn { width: auto; flex: 1; font-size: 18px; padding: 8px 0; background: rgba(255,255,255,0.06); box-shadow: none; }
 .anim-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
@@ -101,7 +111,7 @@ hr { border: 0; border-top: 1px solid rgba(255,255,255,0.08); margin: 2px 0; wid
 <div id="toast"></div>
 
 <h2>3D Apparel Design Studio</h2>
-<p class="subtitle">Real İnsan Silueti və 2D/3D Sinxronizasiya</p>
+<p class="subtitle">Dizaynını yarat, 3D-də canlı gör, HD keyfiyyətdə ixrac et</p>
 
 <div class="main-layout">
   <div class="panel controls">
@@ -158,9 +168,9 @@ hr { border: 0; border-top: 1px solid rgba(255,255,255,0.08); margin: 2px 0; wid
     <hr>
     <label><b>Şəkil:</b></label>
     <input type="file" id="image-upload" accept="image/*">
-    <div class="paste-zone">📋 Şəkli kopyala və <b>Ctrl+V</b> et və ya buraya sürüklə</div>
+    <div class="paste-zone">📋 Şəkli kopyala (sağ klik → Copy image), bura klikləyib <b>Ctrl+V</b> et<br>və ya birbaşa dizayn sahəsinə sürüklə</div>
     <div class="row" style="gap:5px;">
-      <input type="text" id="image-url-input" placeholder="Şəkil URL-i...">
+      <input type="text" id="image-url-input" placeholder="Şəkil URL-i (bəzən işləməyə bilər)...">
       <button id="image-url-btn" class="btn-secondary" style="width:40%;">Yüklə</button>
     </div>
 
@@ -191,10 +201,21 @@ hr { border: 0; border-top: 1px solid rgba(255,255,255,0.08); margin: 2px 0; wid
 
       <div class="section-title">Parçaya Birləşmə (Blend)</div>
       <select id="blend-select">
-        <option value="source-over">Normal</option>
-        <option value="multiply" selected>Parça effekti (Basılmış)</option>
+        <option value="source-over">Normal (üstdə)</option>
+        <option value="multiply" selected>Parça effekti (basılmış kimi)</option>
         <option value="overlay">Overlay</option>
+        <option value="screen">İşıqlı (Screen)</option>
       </select>
+
+      <div class="section-title">Filtr</div>
+      <div class="filter-row grid3">
+        <button class="btn-secondary btn-mini" data-filter="none">Normal</button>
+        <button class="btn-secondary btn-mini" data-filter="gray">Ağ-Qara</button>
+        <button class="btn-secondary btn-mini" data-filter="sepia">Sepia</button>
+        <button class="btn-secondary btn-mini" data-filter="invert">İnvert</button>
+        <button class="btn-secondary btn-mini" data-filter="bright">Parlaq</button>
+        <button class="btn-secondary btn-mini" data-filter="contrast">Kontrast</button>
+      </div>
     </div>
 
     <div class="row">
@@ -214,27 +235,27 @@ hr { border: 0; border-top: 1px solid rgba(255,255,255,0.08); margin: 2px 0; wid
       </svg>
       <div class="print-guide" id="print-guide"></div>
       <div id="front-canvas-container" class="canvas-wrapper">
-        <canvas id="canvas-front" width="340" height="420"></canvas>
+        <canvas id="canvas-front" width="260" height="351"></canvas>
       </div>
       <div id="back-canvas-container" class="canvas-wrapper hidden">
-        <canvas id="canvas-back" width="340" height="420"></canvas>
+        <canvas id="canvas-back" width="260" height="351"></canvas>
       </div>
     </div>
-    <p class="hint">2D kətandakı dizayn real insan modelinin üstünə tətbiq olunur.</p>
+    <p class="hint">Bənövşəyi kəsik xətt real çap sahəsini göstərir. "Uyğunlaşdır" düyməsi şəkli ora avtomatik sığdırır.</p>
   </div>
 
   <div class="panel">
-    <h3 style="margin:0; text-align:center;">Real İnsan Modeli</h3>
+    <h3 style="margin:0; text-align:center;">3D Modelləmə</h3>
     <div id="three-view"></div>
     <div class="anim-selector">
-      <button id="btn-idle" class="btn-secondary active">🧍 Duruş</button>
-      <button id="btn-walk" class="btn-secondary">🚶 Nəfəs</button>
-      <button id="btn-dance" class="btn-secondary">✨ Fırlanma</button>
+      <button id="btn-idle" class="btn-secondary active">🧍 Sakit</button>
+      <button id="btn-walk" class="btn-secondary">🚶 Yeriyiş</button>
+      <button id="btn-dance" class="btn-secondary">💃 Rəqs</button>
     </div>
     <div class="row">
-      <button id="btn-autorotate" class="btn-secondary active">🔄 Avtomatik Fırlanma</button>
+      <button id="btn-autorotate" class="btn-secondary active">🔄 Fırlanma</button>
     </div>
-    <p class="hint">Modeli fırlatmaq üçün siçanla sürükləyin</p>
+    <p class="hint">Siçanla sürüşdür — əl ilə çevir</p>
   </div>
 </div>
 
@@ -250,7 +271,15 @@ function showToast(msg) {
 window.addEventListener('DOMContentLoaded', () => {
   let currentSide = 'front';
   let currentType = 'tshirt';
-  const CANVAS_W = 340, CANVAS_H = 420;
+  const CANVAS_W = 260, CANVAS_H = 351;
+
+  // Real geyimdə çap sahəsi sinə hissəsini geniş tutur — bələdçi çərçivə bunu göstərir (əvvəlki versiya həddən artıq kiçik idi)
+  const GUIDE = { left: CANVAS_W * 0.16, top: CANVAS_H * 0.16, width: CANVAS_W * 0.68, height: CANVAS_H * 0.58 };
+  const guideEl = document.getElementById('print-guide');
+  guideEl.style.left = GUIDE.left + 'px';
+  guideEl.style.top = GUIDE.top + 'px';
+  guideEl.style.width = GUIDE.width + 'px';
+  guideEl.style.height = GUIDE.height + 'px';
 
   const fabricConfig = {
     backgroundColor: null,
@@ -275,23 +304,29 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('apparel-type').addEventListener('change', (e) => {
     currentType = e.target.value;
     document.getElementById('apparel-path').setAttribute('d', svgPaths[currentType]);
+    update3DModel();
   });
 
   document.getElementById('shirt-color').addEventListener('input', (e) => {
     const val = e.target.value;
     document.getElementById('apparel-path').setAttribute('fill', val);
-    if (clothingMat) clothingMat.color.set(val);
+    if (bodyMat) bodyMat.color.set(val);
+    if (leftMat) leftMat.color.set(val);
+    if (rightMat) rightMat.color.set(val);
+    if (frontFaceMat) frontFaceMat.color.set(val);
+    if (backFaceMat) backFaceMat.color.set(val);
     refreshComposite('front');
     refreshComposite('back');
   });
 
   document.getElementById('gloss-slider').addEventListener('input', (e) => {
     document.getElementById('gloss-val').innerText = e.target.value + '%';
-    if (clothingMat) clothingMat.roughness = 1 - (e.target.value / 100);
+    const rough = 1 - (e.target.value / 100);
+    [bodyMat, leftMat, rightMat, frontFaceMat, backFaceMat].forEach(m => { if (m) m.roughness = rough; });
   });
   document.getElementById('metal-slider').addEventListener('input', (e) => {
     document.getElementById('metal-val').innerText = e.target.value + '%';
-    if (clothingMat) clothingMat.metalness = e.target.value / 100;
+    [bodyMat, leftMat, rightMat, frontFaceMat, backFaceMat].forEach(m => { if (m) m.metalness = e.target.value / 100; });
   });
 
   document.getElementById('btn-front').addEventListener('click', () => {
@@ -323,10 +358,16 @@ window.addEventListener('DOMContentLoaded', () => {
   }
   autoRotateBtn.addEventListener('click', () => setAutoRotate(!autoRotate));
 
+  // ---- Animasiya rejimləri: Sakit / Yeriyiş / Rəqs ----
+  const animBtns = { idle: document.getElementById('btn-idle'), walk: document.getElementById('btn-walk'), dance: document.getElementById('btn-dance') };
   let animMode = 'idle';
-  document.getElementById('btn-idle').addEventListener('click', () => { animMode = 'idle'; document.getElementById('btn-idle').classList.add('active'); document.getElementById('btn-walk').classList.remove('active'); document.getElementById('btn-dance').classList.remove('active'); });
-  document.getElementById('btn-walk').addEventListener('click', () => { animMode = 'walk'; document.getElementById('btn-walk').classList.add('active'); document.getElementById('btn-idle').classList.remove('active'); document.getElementById('btn-dance').classList.remove('active'); });
-  document.getElementById('btn-dance').addEventListener('click', () => { animMode = 'dance'; document.getElementById('btn-dance').classList.add('active'); document.getElementById('btn-idle').classList.remove('active'); document.getElementById('btn-walk').classList.remove('active'); });
+  function setAnimMode(mode) {
+    animMode = mode;
+    Object.keys(animBtns).forEach(k => animBtns[k].classList.toggle('active', k === mode));
+  }
+  animBtns.idle.addEventListener('click', () => setAnimMode('idle'));
+  animBtns.walk.addEventListener('click', () => setAnimMode('walk'));
+  animBtns.dance.addEventListener('click', () => setAnimMode('dance'));
 
   document.getElementById('add-text-btn').addEventListener('click', () => {
     const txt = document.getElementById('text-input').value;
@@ -344,6 +385,7 @@ window.addEventListener('DOMContentLoaded', () => {
     c.renderAll();
   });
 
+  // ---- Tez nişanlar ----
   document.querySelectorAll('.sticker-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const glyph = btn.dataset.sticker;
@@ -356,13 +398,17 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // ---- Mərkəzi şəkil əlavəetmə (fayl / paste / drag-drop hamısı buradan keçir) ----
   function fitToGuide(img) {
-    const guideW = 160, guideH = 210;
-    const scaleX = guideW / img.width;
-    const scaleY = guideH / img.height;
+    const scaleX = GUIDE.width / img.width;
+    const scaleY = GUIDE.height / img.height;
     const scale = Math.min(scaleX, scaleY);
     img.scale(scale);
-    img.set({ left: CANVAS_W / 2, top: CANVAS_H / 2, originX: 'center', originY: 'center' });
+    img.set({
+      left: GUIDE.left + GUIDE.width / 2,
+      top: GUIDE.top + GUIDE.height / 2,
+      originX: 'center', originY: 'center'
+    });
   }
 
   function addImageFromDataUrl(dataUrl) {
@@ -371,9 +417,10 @@ window.addEventListener('DOMContentLoaded', () => {
       if (autoFit) {
         fitToGuide(img);
       } else {
-        img.scaleToWidth(140);
+        img.scaleToWidth(CANVAS_W * 0.4);
         img.set({ left: CANVAS_W / 2, top: CANVAS_H / 2, originX: 'center', originY: 'center' });
       }
+      img.set('globalCompositeOperation', 'multiply');
       const c = getActiveCanvas();
       c.add(img); c.setActiveObject(img); c.renderAll();
       showToast('Şəkil əlavə olundu ✓');
@@ -403,35 +450,60 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   const editorContainer = document.getElementById('editor-container');
-  editorContainer.addEventListener('dragover', (e) => { e.preventDefault(); });
+  editorContainer.addEventListener('dragover', (e) => { e.preventDefault(); editorContainer.classList.add('drag-over'); });
+  editorContainer.addEventListener('dragleave', () => editorContainer.classList.remove('drag-over'));
   editorContainer.addEventListener('drop', (e) => {
     e.preventDefault();
+    editorContainer.classList.remove('drag-over');
     const file = e.dataTransfer.files[0];
     if (file && file.type.startsWith('image/')) {
       const reader = new FileReader();
       reader.onload = (f) => addImageFromDataUrl(f.target.result);
       reader.readAsDataURL(file);
+    } else {
+      showToast('Yalnız şəkil fayllarını sürüklə');
     }
   });
 
   document.getElementById('image-url-btn').addEventListener('click', () => {
     const rawUrl = document.getElementById('image-url-input').value.trim();
     if (!rawUrl) return;
-    fabric.Image.fromURL(rawUrl, (img) => {
-      if (!img || !img.width) { showToast('Şəkil yüklənmədi'); return; }
-      const autoFit = document.getElementById('auto-fit-toggle').checked;
-      if (autoFit) fitToGuide(img);
-      else { img.scaleToWidth(140); img.set({ left: CANVAS_W / 2, top: CANVAS_H / 2, originX: 'center', originY: 'center' }); }
-      const c = getActiveCanvas();
-      c.add(img); c.setActiveObject(img); c.renderAll();
-      showToast('Şəkil əlavə olundu ✓');
-    }, { crossOrigin: 'anonymous' });
+    const proxies = [
+      u => 'https://corsproxy.io/?url=' + encodeURIComponent(u),
+      u => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u),
+      u => u
+    ];
+    let i = 0;
+    function tryNext() {
+      if (i >= proxies.length) { showToast('Alınmadı — bunun əvəzinə şəkli kopyala (Ctrl+V) et'); return; }
+      const url = proxies[i](rawUrl);
+      i++;
+      fabric.Image.fromURL(url, (img, isError) => {
+        if (isError || !img || !img.width) { tryNext(); return; }
+        const autoFit = document.getElementById('auto-fit-toggle').checked;
+        if (autoFit) fitToGuide(img);
+        else { img.scaleToWidth(CANVAS_W * 0.4); img.set({ left: CANVAS_W / 2, top: CANVAS_H / 2, originX: 'center', originY: 'center' }); }
+        img.set('globalCompositeOperation', 'multiply');
+        const c = getActiveCanvas();
+        c.add(img); c.setActiveObject(img); c.renderAll();
+        showToast('Şəkil əlavə olundu ✓');
+      }, { crossOrigin: 'anonymous' });
+    }
+    tryNext();
   });
 
   document.getElementById('delete-btn').addEventListener('click', () => {
     const c = getActiveCanvas();
     const obj = c.getActiveObject();
     if (obj) { c.remove(obj); c.renderAll(); }
+  });
+  window.addEventListener('keydown', (e) => {
+    const tag = document.activeElement.tagName;
+    if ((e.key === 'Delete' || e.key === 'Backspace') && tag !== 'INPUT' && tag !== 'TEXTAREA') {
+      const c = getActiveCanvas();
+      const obj = c.getActiveObject();
+      if (obj) { c.remove(obj); c.renderAll(); }
+    }
   });
 
   document.getElementById('clear-btn').addEventListener('click', () => getActiveCanvas().clear());
@@ -443,6 +515,7 @@ window.addEventListener('DOMContentLoaded', () => {
     a.href = dataURL; a.click();
   });
 
+  // ---- Effekt Paneli ----
   const effectsPanel = document.getElementById('effects-panel');
   const opacitySlider = document.getElementById('opacity-slider');
   const rotateSlider = document.getElementById('rotate-slider');
@@ -531,11 +604,29 @@ window.addEventListener('DOMContentLoaded', () => {
     if (obj) { obj.set('globalCompositeOperation', blendSelect.value); getActiveCanvas().renderAll(); }
   });
 
+  document.querySelectorAll('.filter-row button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const c = getActiveCanvas();
+      const obj = c.getActiveObject();
+      if (!obj || obj.type !== 'image') { showToast('Əvvəlcə şəklin üzərinə klikləyin'); return; }
+      const type = btn.dataset.filter;
+      obj.filters = [];
+      if (type === 'gray') obj.filters.push(new fabric.Image.filters.Grayscale());
+      if (type === 'sepia') obj.filters.push(new fabric.Image.filters.Sepia());
+      if (type === 'invert') obj.filters.push(new fabric.Image.filters.Invert());
+      if (type === 'bright') obj.filters.push(new fabric.Image.filters.Brightness({ brightness: 0.25 }));
+      if (type === 'contrast') obj.filters.push(new fabric.Image.filters.Contrast({ contrast: 0.3 }));
+      obj.applyFilters();
+      c.renderAll();
+    });
+  });
+
+  // ================= THREE.JS =================
   const container = document.getElementById('three-view');
   const scene = new THREE.Scene();
 
-  const camera = new THREE.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 0.1, 1000);
-  camera.position.set(0, 1.3, 3.2);
+  const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+  camera.position.set(0, 0.15, 4.6);
 
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -544,98 +635,161 @@ window.addEventListener('DOMContentLoaded', () => {
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   container.appendChild(renderer.domElement);
 
-  scene.add(new THREE.HemisphereLight(0xffffff, 0x444455, 0.9));
-  const keyLight = new THREE.DirectionalLight(0xffffff, 1.2);
-  keyLight.position.set(3, 5, 4);
+  scene.add(new THREE.HemisphereLight(0x8888ff, 0x110022, 0.6));
+  const keyLight = new THREE.DirectionalLight(0xffffff, 1.15);
+  keyLight.position.set(2.2, 4, 3);
   keyLight.castShadow = true;
+  keyLight.shadow.mapSize.set(1024, 1024);
   scene.add(keyLight);
+  const rimLight = new THREE.DirectionalLight(0xcba6f7, 0.5);
+  rimLight.position.set(-3, 1.5, -3);
+  scene.add(rimLight);
+  scene.add(new THREE.AmbientLight(0xffffff, 0.35));
 
-  const floor = new THREE.Mesh(new THREE.PlaneGeometry(6, 6), new THREE.ShadowMaterial({ opacity: 0.25 }));
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(6, 6), new THREE.ShadowMaterial({ opacity: 0.35 }));
   floor.rotation.x = -Math.PI / 2;
-  floor.position.y = -0.05;
+  floor.position.y = -1.65;
   floor.receiveShadow = true;
   scene.add(floor);
 
-  let modelGroup = new THREE.Group();
-  scene.add(modelGroup);
+  let shirtGroup = new THREE.Group();
+  scene.add(shirtGroup);
 
+  let bodyMat, leftMat, rightMat, skinMat, frontFaceMat, backFaceMat;
+  let headMesh, torsoMesh, leftArmGroup, rightArmGroup, leftLegGroup, rightLegGroup;
+  let autoRotate = true, clock = 0, targetRotationY = 0;
+
+  // ---- Kompozit toxuma: parça rəngi + kətan taxılı fon + kənar kölgələmə + dizayn (multiply) ----
+  // Bu, dizaynı ayrıca "üzən lövhə" kimi deyil, gövdənin öz materialının bir hissəsi kimi bişirir.
+  // Nəticədə eyni işıq/kölgəni alır, parallax fərqi yaranmır — "stiker" hissi aradan qalxır.
   const compFront = document.createElement('canvas');
   const compBack = document.createElement('canvas');
   compFront.width = compBack.width = CANVAS_W;
   compFront.height = compBack.height = CANVAS_H;
   const frontTex = new THREE.CanvasTexture(compFront);
   const backTex = new THREE.CanvasTexture(compBack);
+  frontTex.minFilter = backTex.minFilter = THREE.LinearFilter;
+  frontTex.magFilter = backTex.magFilter = THREE.LinearFilter;
+
+  function hexToRgb(hex) {
+    const v = parseInt(hex.replace('#',''), 16);
+    return { r: (v>>16)&255, g: (v>>8)&255, b: v&255 };
+  }
 
   function refreshComposite(side) {
     const comp = side === 'front' ? compFront : compBack;
     const designCanvasEl = document.getElementById(side === 'front' ? 'canvas-front' : 'canvas-back');
     const ctx = comp.getContext('2d');
     const shirtColor = document.getElementById('shirt-color').value;
+    const rgb = hexToRgb(shirtColor);
 
-    ctx.clearRect(0, 0, comp.width, comp.height);
+    // 1) Baza rəng + kətan taxılı (fabric grain) fon
     ctx.fillStyle = shirtColor;
     ctx.fillRect(0, 0, comp.width, comp.height);
+    const imgData = ctx.getImageData(0, 0, comp.width, comp.height);
+    for (let i = 0; i < imgData.data.length; i += 4) {
+      const n = (Math.random() - 0.5) * 10;
+      imgData.data[i] = Math.min(255, Math.max(0, imgData.data[i] + n));
+      imgData.data[i+1] = Math.min(255, Math.max(0, imgData.data[i+1] + n));
+      imgData.data[i+2] = Math.min(255, Math.max(0, imgData.data[i+2] + n));
+    }
+    ctx.putImageData(imgData, 0, 0);
 
-    ctx.save();
-    ctx.translate(comp.width / 2, comp.height / 2);
-    ctx.drawImage(designCanvasEl, -designCanvasEl.width / 2, -designCanvasEl.height / 2);
-    ctx.restore();
+    // 2) Bədən əyriliyini simulyasiya edən yumşaq kənar kölgələmə
+    const grad = ctx.createLinearGradient(0, 0, comp.width, 0);
+    grad.addColorStop(0, 'rgba(0,0,0,0.18)');
+    grad.addColorStop(0.5, 'rgba(255,255,255,0.04)');
+    grad.addColorStop(1, 'rgba(0,0,0,0.22)');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, comp.width, comp.height);
+
+    // 3) Dizaynı parçaya "basılmış" effekti ilə birləşdir
+    ctx.globalCompositeOperation = 'multiply';
+    ctx.drawImage(designCanvasEl, 0, 0, comp.width, comp.height);
+    ctx.globalCompositeOperation = 'source-over';
 
     (side === 'front' ? frontTex : backTex).needsUpdate = true;
   }
 
-  // Real insan bədən proporsiyalarına uyğun detallı 3D siluet quruluşu
-  let clothingMat = new THREE.MeshStandardMaterial({
-    map: frontTex,
-    roughness: 0.5,
-    metalness: 0.1
-  });
+  function update3DModel() {
+    while (shirtGroup.children.length > 0) shirtGroup.remove(shirtGroup.children[0]);
 
-  const bodyGroup = new THREE.Group();
-  
-  // Baş
-  const head = new THREE.Mesh(new THREE.SphereGeometry(0.15, 32, 32), new THREE.MeshStandardMaterial({color: 0xdeb887, roughness: 0.6}));
-  head.position.set(0, 1.25, 0);
-  bodyGroup.add(head);
+    const shirtColor = document.getElementById('shirt-color').value;
+    const rough = 1 - (document.getElementById('gloss-slider').value / 100);
+    const metal = document.getElementById('metal-slider').value / 100;
 
-  // Boyun
-  const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.07, 0.1, 16), new THREE.MeshStandardMaterial({color: 0xdeb887}));
-  neck.position.set(0, 1.12, 0);
-  bodyGroup.add(neck);
+    bodyMat = new THREE.MeshStandardMaterial({ color: shirtColor, roughness: rough, metalness: metal });
+    leftMat = new THREE.MeshStandardMaterial({ color: shirtColor, roughness: rough, metalness: metal });
+    rightMat = new THREE.MeshStandardMaterial({ color: shirtColor, roughness: rough, metalness: metal });
+    frontFaceMat = new THREE.MeshStandardMaterial({ map: frontTex, color: shirtColor, roughness: rough, metalness: metal });
+    backFaceMat = new THREE.MeshStandardMaterial({ map: backTex, color: shirtColor, roughness: rough, metalness: metal });
+    skinMat = new THREE.MeshStandardMaterial({ color: 0xd4a373, roughness: 0.7 });
+    const pantsMat = new THREE.MeshStandardMaterial({ color: 0x1c1c28, roughness: 0.7 });
 
-  // Gövdə (T-Shirt / Hoodie geyinən əsas hissə)
-  const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.18, 0.65, 32), clothingMat);
-  torso.position.set(0, 0.75, 0);
-  bodyGroup.add(torso);
+    function mesh(geo, mat) { const m = new THREE.Mesh(geo, mat); m.castShadow = true; m.receiveShadow = true; return m; }
 
-  // Qollar
-  const armMat = new THREE.MeshStandardMaterial({color: 0xdeb887, roughness: 0.6});
-  const leftArm = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.05, 0.55, 16), armMat);
-  leftArm.position.set(-0.3, 0.75, 0);
-  leftArm.rotation.z = -0.15;
-  bodyGroup.add(leftArm);
+    headMesh = mesh(new THREE.SphereGeometry(0.25, 24, 24), skinMat);
+    headMesh.position.set(0, 1.15, 0);
+    shirtGroup.add(headMesh);
+    const neck = mesh(new THREE.CylinderGeometry(0.1, 0.12, 0.15, 12), skinMat);
+    neck.position.set(0, 0.92, 0);
+    shirtGroup.add(neck);
 
-  const rightArm = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.05, 0.55, 16), armMat);
-  rightArm.position.set(0.3, 0.75, 0);
-  rightArm.rotation.z = 0.15;
-  bodyGroup.add(rightArm);
+    // Gövdə: sağ, sol, üst, alt üzlər sadə material; ön/arxa üzlər dizayn toxuması ilə (BoxGeometry üz sırası: +x,-x,+y,-y,+z,-z)
+    const torsoGeo = new THREE.BoxGeometry(1.1, 1.3, 0.32);
+    torsoMesh = new THREE.Mesh(torsoGeo, [bodyMat, bodyMat, bodyMat, bodyMat, frontFaceMat, backFaceMat]);
+    torsoMesh.castShadow = true; torsoMesh.receiveShadow = true;
+    torsoMesh.position.set(0, 0.18, 0);
+    shirtGroup.add(torsoMesh);
 
-  // Şalvar / Ayaqlar
-  const pantsMat = new THREE.MeshStandardMaterial({color: 0x22223b, roughness: 0.8});
-  const leftLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.06, 0.75, 16), pantsMat);
-  leftLeg.position.set(-0.11, 0.15, 0);
-  bodyGroup.add(leftLeg);
+    if (currentType === 'hoodie') {
+      const hood = mesh(new THREE.SphereGeometry(0.32, 16, 16), bodyMat);
+      hood.position.set(0, 1.02, -0.12);
+      shirtGroup.add(hood);
+    }
 
-  const rightLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.06, 0.75, 16), pantsMat);
-  rightLeg.position.set(0.11, 0.15, 0);
-  bodyGroup.add(rightLeg);
+    const sleeveLen = currentType === 'hoodie' ? 0.85 : 0.42;
+    const forearmLen = currentType === 'hoodie' ? 0 : 0.4;
 
-  modelGroup.add(bodyGroup);
+    function buildArm(side) {
+      const group = new THREE.Group();
+      group.position.set(side * 0.63, 0.75, 0);
+      const sleeve = mesh(new THREE.BoxGeometry(0.3, sleeveLen, 0.3), side < 0 ? leftMat : rightMat);
+      sleeve.position.set(0, -sleeveLen / 2, 0);
+      group.add(sleeve);
+      if (forearmLen > 0) {
+        const forearm = mesh(new THREE.BoxGeometry(0.24, forearmLen, 0.24), skinMat);
+        forearm.position.set(0, -sleeveLen - forearmLen / 2, 0);
+        group.add(forearm);
+      }
+      shirtGroup.add(group);
+      return group;
+    }
+    leftArmGroup = buildArm(-1);
+    rightArmGroup = buildArm(1);
+
+    function buildLeg(side) {
+      const group = new THREE.Group();
+      group.position.set(side * 0.25, -0.47, 0);
+      const leg = mesh(new THREE.BoxGeometry(0.32, 1.15, 0.32), pantsMat);
+      leg.position.set(0, -0.575, 0);
+      group.add(leg);
+      shirtGroup.add(group);
+      return group;
+    }
+    leftLegGroup = buildLeg(-1);
+    rightLegGroup = buildLeg(1);
+
+    refreshComposite('front');
+    refreshComposite('back');
+  }
+
+  update3DModel();
+  refreshComposite('front');
+  refreshComposite('back');
 
   canvasFront.on('after:render', () => refreshComposite('front'));
   canvasBack.on('after:render', () => refreshComposite('back'));
-  refreshComposite('front');
-  refreshComposite('back');
 
   let isDragging = false, prevX = 0;
   container.addEventListener('mousedown', (e) => { isDragging = true; prevX = e.clientX; setAutoRotate(false); });
@@ -643,30 +797,63 @@ window.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('mousemove', (e) => {
     if (!isDragging) return;
     const delta = e.clientX - prevX; prevX = e.clientX;
-    modelGroup.rotation.y += delta * 0.01;
-    targetRotationY = modelGroup.rotation.y;
+    shirtGroup.rotation.y += delta * 0.01;
+    targetRotationY = shirtGroup.rotation.y;
+  });
+  container.addEventListener('touchstart', (e) => { isDragging = true; prevX = e.touches[0].clientX; setAutoRotate(false); });
+  window.addEventListener('touchend', () => isDragging = false);
+  window.addEventListener('touchmove', (e) => {
+    if (!isDragging) return;
+    const delta = e.touches[0].clientX - prevX; prevX = e.touches[0].clientX;
+    shirtGroup.rotation.y += delta * 0.01;
+    targetRotationY = shirtGroup.rotation.y;
   });
 
-  let autoRotate = true, clock = 0, targetRotationY = 0;
+  window.addEventListener('resize', () => {
+    const w = container.clientWidth, h = container.clientHeight;
+    camera.aspect = w / h; camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
+  });
+
   function animate() {
     requestAnimationFrame(animate);
     clock += 0.016;
 
     if (animMode === 'walk') {
-      // Nəfəsalma / yüngül tərpənmə effekti
-      bodyGroup.position.y = Math.sin(clock * 4) * 0.02;
+      const swing = Math.sin(clock * 5) * 0.5;
+      if (leftArmGroup) leftArmGroup.rotation.x = swing;
+      if (rightArmGroup) rightArmGroup.rotation.x = -swing;
+      if (leftLegGroup) leftLegGroup.rotation.x = -swing;
+      if (rightLegGroup) rightLegGroup.rotation.x = swing;
+      shirtGroup.position.y = Math.abs(Math.sin(clock * 10)) * 0.06;
+      shirtGroup.rotation.z *= 0.9;
     } else if (animMode === 'dance') {
-      // Fırlanma və rəqs dalğası
-      bodyGroup.rotation.z = Math.sin(clock * 5) * 0.05;
+      const t = clock * 6;
+      if (leftArmGroup) leftArmGroup.rotation.x = Math.sin(t) * 1.1 - 0.3;
+      if (rightArmGroup) rightArmGroup.rotation.x = Math.sin(t + Math.PI) * 1.1 - 0.3;
+      if (leftArmGroup) leftArmGroup.rotation.z = Math.cos(t * 0.7) * 0.3;
+      if (rightArmGroup) rightArmGroup.rotation.z = -Math.cos(t * 0.7) * 0.3;
+      if (leftLegGroup) leftLegGroup.rotation.x = Math.sin(t * 1.3) * 0.35;
+      if (rightLegGroup) rightLegGroup.rotation.x = -Math.sin(t * 1.3) * 0.35;
+      shirtGroup.rotation.z = Math.sin(t * 0.8) * 0.12;
+      shirtGroup.position.y = Math.abs(Math.sin(t * 1.6)) * 0.1;
+      if (headMesh) headMesh.rotation.z = Math.sin(t * 0.9) * 0.15;
     } else {
-      bodyGroup.position.y = 0;
-      bodyGroup.rotation.z = 0;
+      if (leftArmGroup) { leftArmGroup.rotation.x *= 0.9; leftArmGroup.rotation.z *= 0.9; }
+      if (rightArmGroup) { rightArmGroup.rotation.x *= 0.9; rightArmGroup.rotation.z *= 0.9; }
+      if (leftLegGroup) leftLegGroup.rotation.x *= 0.9;
+      if (rightLegGroup) rightLegGroup.rotation.x *= 0.9;
+      if (headMesh) headMesh.rotation.z *= 0.9;
+      shirtGroup.position.y *= 0.9;
+      shirtGroup.rotation.z *= 0.9;
+      // sakit vəziyyətdə yüngül nəfəs effekti
+      if (torsoMesh) torsoMesh.scale.y = 1 + Math.sin(clock * 1.5) * 0.01;
     }
 
     if (autoRotate) {
-      modelGroup.rotation.y += 0.005;
+      shirtGroup.rotation.y += 0.006;
     } else if (!isDragging) {
-      modelGroup.rotation.y += (targetRotationY - modelGroup.rotation.y) * 0.08;
+      shirtGroup.rotation.y += (targetRotationY - shirtGroup.rotation.y) * 0.08;
     }
     renderer.render(scene, camera);
   }
