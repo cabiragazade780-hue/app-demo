@@ -17,27 +17,17 @@ body {
   min-height: 100vh;
 }
 h2 {
-  text-align: center;
-  margin: 0 0 4px;
-  font-size: 28px;
-  font-weight: 800;
-  letter-spacing: -0.5px;
+  text-align: center; margin: 0 0 4px; font-size: 28px; font-weight: 800; letter-spacing: -0.5px;
   background: linear-gradient(90deg, #cba6f7, #89b4fa, #f5c2e7);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  -webkit-background-clip: text; background-clip: text; color: transparent;
 }
 .subtitle { text-align: center; color: #8a8aa3; margin-bottom: 28px; font-size: 14px; }
-.main-layout { display: grid; grid-template-columns: 300px 1fr 1fr; gap: 20px; max-width: 1400px; margin: 0 auto; }
+.main-layout { display: grid; grid-template-columns: 300px 1fr 1fr; gap: 20px; max-width: 1450px; margin: 0 auto; }
 @media (max-width: 1100px) { .main-layout { grid-template-columns: 1fr; max-width: 480px; } }
 
 .panel {
-  background: rgba(24,24,37,0.7);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  padding: 20px;
-  border-radius: 16px;
-  border: 1px solid rgba(255,255,255,0.07);
+  background: rgba(24,24,37,0.7); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.07);
   box-shadow: 0 12px 32px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.04);
   display: flex; flex-direction: column; gap: 12px;
 }
@@ -52,9 +42,8 @@ input[type=range] { padding: 0; cursor: pointer; accent-color: #cba6f7; }
 input[type=color] { height: 36px; padding: 2px; cursor: pointer; }
 input:focus, select:focus { outline: none; border-color: #cba6f7; box-shadow: 0 0 0 3px rgba(203,166,247,0.15); }
 button {
-  background: linear-gradient(135deg, #cba6f7, #89b4fa);
-  color: #11111b; font-weight: 700; cursor: pointer; border: none;
-  box-shadow: 0 4px 14px rgba(137,180,250,0.25);
+  background: linear-gradient(135deg, #cba6f7, #89b4fa); color: #11111b; font-weight: 700;
+  cursor: pointer; border: none; box-shadow: 0 4px 14px rgba(137,180,250,0.25);
 }
 button:hover { filter: brightness(1.1); transform: translateY(-1px); }
 button:active { transform: scale(0.97); }
@@ -63,21 +52,32 @@ button:active { transform: scale(0.97); }
 .btn-success { background: linear-gradient(135deg, #a6e3a1, #7fd6a3); color: #11111b; }
 .btn-secondary { background: rgba(255,255,255,0.06); color: #cdd6f4; box-shadow: none; }
 .btn-secondary.active { background: linear-gradient(135deg,#f9e2af,#f5c26b); color: #11111b; }
-.filter-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-.filter-row button { font-size: 11px; padding: 6px 2px; }
+.btn-mini { padding: 7px 6px; font-size: 11px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
 .section-title { font-size: 11px; color: #8a8aa3; text-transform: uppercase; font-weight: 700; letter-spacing: 0.8px; margin-top: 6px; }
 .editor-container {
-  position: relative; width: 100%; height: 420px;
-  background: linear-gradient(160deg,#14141f,#0a0a10);
+  position: relative; width: 100%; height: 440px;
+  background:
+    repeating-linear-gradient(45deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 2px, transparent 2px, transparent 6px),
+    linear-gradient(160deg,#16161f,#0a0a10);
   border-radius: 14px; display: flex; justify-content: center; align-items: center;
-  overflow: hidden; border: 1px dashed rgba(255,255,255,0.12);
-  transition: border-color .2s;
+  overflow: hidden; border: 1px dashed rgba(255,255,255,0.12); transition: border-color .2s;
 }
 .editor-container.drag-over { border-color: #cba6f7; box-shadow: inset 0 0 0 2px rgba(203,166,247,0.4); }
 .apparel-svg { position: absolute; width: 300px; height: 400px; z-index: 1; pointer-events: none; opacity: 0.25; }
+.print-guide {
+  position: absolute; z-index: 1; pointer-events: none;
+  border: 1.5px dashed rgba(203,166,247,0.45); border-radius: 6px;
+}
+.print-guide::after {
+  content: 'Tövsiyə olunan çap sahəsi'; position: absolute; top: -18px; left: 0;
+  font-size: 9.5px; color: rgba(203,166,247,0.6); white-space: nowrap;
+}
 .canvas-wrapper { position: absolute !important; z-index: 2; }
 #three-view {
-  width: 100%; height: 420px; border-radius: 14px;
+  width: 100%; height: 440px; border-radius: 14px;
   background: radial-gradient(circle at 50% 25%, #23233a, #050508 75%);
   cursor: grab; overflow: hidden;
 }
@@ -91,16 +91,19 @@ button:active { transform: scale(0.97); }
 hr { border: 0; border-top: 1px solid rgba(255,255,255,0.08); margin: 2px 0; width: 100%; }
 #toast {
   position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
-  background: rgba(24,24,37,0.95); backdrop-filter: blur(10px);
-  color: #e6e6f0; padding: 12px 22px; border-radius: 30px; font-weight: 600; font-size: 13px;
-  border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-  display: none; z-index: 1000; opacity: 0; transition: opacity .25s, transform .25s;
+  background: rgba(24,24,37,0.95); backdrop-filter: blur(10px); color: #e6e6f0; padding: 12px 22px;
+  border-radius: 30px; font-weight: 600; font-size: 13px; border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: none; z-index: 1000; opacity: 0;
+  transition: opacity .25s, transform .25s;
 }
 #toast.show { display: block; opacity: 1; transform: translateX(-50%) translateY(0); }
 .paste-zone {
   border: 1px dashed rgba(255,255,255,0.15); border-radius: 8px; padding: 10px; text-align: center;
   font-size: 12px; color: #8a8aa3;
 }
+.sticker-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.sticker-btn { width: auto; flex: 1; font-size: 18px; padding: 8px 0; background: rgba(255,255,255,0.06); box-shadow: none; }
+.anim-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
 </style>
 </head>
 <body>
@@ -121,7 +124,7 @@ hr { border: 0; border-top: 1px solid rgba(255,255,255,0.08); margin: 2px 0; wid
     </div>
     <div class="row">
       <label>Geyimin Rəngi:</label>
-      <input type="color" id="shirt-color" value="#89b4fa">
+      <input type="color" id="shirt-color" value="#1e1e2e">
     </div>
 
     <div class="section-title">Material Fakturası</div>
@@ -152,9 +155,20 @@ hr { border: 0; border-top: 1px solid rgba(255,255,255,0.08); margin: 2px 0; wid
     <button id="add-text-btn">Mətni Əlavə Et</button>
 
     <hr>
+    <label><b>Tez Nişanlar:</b></label>
+    <div class="sticker-row">
+      <button class="sticker-btn" data-sticker="★">★</button>
+      <button class="sticker-btn" data-sticker="♦">♦</button>
+      <button class="sticker-btn" data-sticker="⚡">⚡</button>
+      <button class="sticker-btn" data-sticker="♠">♠</button>
+      <button class="sticker-btn" data-sticker="●">●</button>
+      <button class="sticker-btn" data-sticker="✦">✦</button>
+    </div>
+
+    <hr>
     <label><b>Şəkil:</b></label>
     <input type="file" id="image-upload" accept="image/*">
-    <div class="paste-zone">📋 Brauzerdən şəkli kopyala (sağ klik → Copy image) və bura klikləyib <b>Ctrl+V</b> et<br>və ya şəkli birbaşa dizayn sahəsinə sürüklə</div>
+    <div class="paste-zone">📋 Şəkli kopyala (sağ klik → Copy image), bura klikləyib <b>Ctrl+V</b> et<br>və ya birbaşa dizayn sahəsinə sürüklə</div>
     <div class="row" style="gap:5px;">
       <input type="text" id="image-url-input" placeholder="Şəkil URL-i (bəzən işləməyə bilər)...">
       <button id="image-url-btn" class="btn-secondary" style="width:40%;">Yüklə</button>
@@ -165,19 +179,47 @@ hr { border: 0; border-top: 1px solid rgba(255,255,255,0.08); margin: 2px 0; wid
       <div class="section-title">Element Parametrləri</div>
       <div class="range-label"><span>Şəffaflıq</span><span id="opacity-val">100%</span></div>
       <input type="range" id="opacity-slider" min="0" max="100" value="100">
+      <div class="range-label"><span>Fırlatma</span><span id="rotate-val">0°</span></div>
+      <input type="range" id="rotate-slider" min="0" max="360" value="0">
+      <div class="range-label"><span>Ölçü</span><span id="scale-val">100%</span></div>
+      <input type="range" id="scale-slider" min="10" max="300" value="100">
+
+      <div class="grid3">
+        <button id="flip-btn" class="btn-secondary btn-mini">↔ Güzgü</button>
+        <button id="fit-btn" class="btn-secondary btn-mini">⛶ Uyğunlaşdır</button>
+        <button id="dup-btn" class="btn-secondary btn-mini">⧉ Kopya</button>
+      </div>
+      <div class="grid2">
+        <button id="front-layer-btn" class="btn-secondary btn-mini">Önə Gətir</button>
+        <button id="back-layer-btn" class="btn-secondary btn-mini">Arxaya Sal</button>
+      </div>
+
       <div class="row">
         <label><input type="checkbox" id="shadow-toggle" style="width:auto;"> Kölgə</label>
         <input type="color" id="shadow-color" value="#000000" style="width:40px; height:28px;">
       </div>
+
+      <div class="section-title">Parçaya Birləşmə (Blend)</div>
+      <select id="blend-select">
+        <option value="source-over">Normal (üstdə)</option>
+        <option value="multiply" selected>Parça effekti (basılmış kimi)</option>
+        <option value="overlay">Overlay</option>
+        <option value="screen">İşıqlı (Screen)</option>
+      </select>
+
       <div class="section-title">Filtr</div>
-      <div class="filter-row">
-        <button class="btn-secondary" data-filter="none">Normal</button>
-        <button class="btn-secondary" data-filter="gray">Ağ-Qara</button>
-        <button class="btn-secondary" data-filter="sepia">Sepia</button>
-        <button class="btn-secondary" data-filter="invert">İnvert</button>
-        <button class="btn-secondary" data-filter="bright">Parlaq</button>
-        <button class="btn-secondary" data-filter="contrast">Kontrast</button>
+      <div class="filter-row grid3">
+        <button class="btn-secondary btn-mini" data-filter="none">Normal</button>
+        <button class="btn-secondary btn-mini" data-filter="gray">Ağ-Qara</button>
+        <button class="btn-secondary btn-mini" data-filter="sepia">Sepia</button>
+        <button class="btn-secondary btn-mini" data-filter="invert">İnvert</button>
+        <button class="btn-secondary btn-mini" data-filter="bright">Parlaq</button>
+        <button class="btn-secondary btn-mini" data-filter="contrast">Kontrast</button>
       </div>
+    </div>
+
+    <div class="row">
+      <label><input type="checkbox" id="auto-fit-toggle" style="width:auto;" checked> Yeni şəkli avtomatik sığdır</label>
     </div>
 
     <button id="delete-btn" class="btn-secondary">Seçiləni Sil</button>
@@ -189,8 +231,9 @@ hr { border: 0; border-top: 1px solid rgba(255,255,255,0.08); margin: 2px 0; wid
     <h3 style="margin:0; text-align:center;" id="canvas-title">2D Dizayn (Ön Tərəf)</h3>
     <div class="editor-container" id="editor-container">
       <svg class="apparel-svg" viewBox="0 0 100 100">
-        <path id="apparel-path" fill="#89b4fa" stroke="#fff" stroke-width="0.5" d="M 30,10 L 40,17 C 45,19 55,19 60,17 L 70,10 L 90,25 L 80,40 L 73,33 L 73,90 L 27,90 L 27,33 L 20,40 L 10,25 Z"/>
+        <path id="apparel-path" fill="#1e1e2e" stroke="#fff" stroke-width="0.5" d="M 30,10 L 40,17 C 45,19 55,19 60,17 L 70,10 L 90,25 L 80,40 L 73,33 L 73,90 L 27,90 L 27,33 L 20,40 L 10,25 Z"/>
       </svg>
+      <div class="print-guide" id="print-guide"></div>
       <div id="front-canvas-container" class="canvas-wrapper">
         <canvas id="canvas-front" width="260" height="351"></canvas>
       </div>
@@ -198,15 +241,19 @@ hr { border: 0; border-top: 1px solid rgba(255,255,255,0.08); margin: 2px 0; wid
         <canvas id="canvas-back" width="260" height="351"></canvas>
       </div>
     </div>
-    <p class="hint">Element seç, sürüşdür, künclərdən miqyaslandır. Bu sahə 3D modeldəki çap sahəsinə tam uyğundur.</p>
+    <p class="hint">Bənövşəyi kəsik xətt real çap sahəsini göstərir. "Uyğunlaşdır" düyməsi şəkli ora avtomatik sığdırır.</p>
   </div>
 
   <div class="panel">
     <h3 style="margin:0; text-align:center;">3D Modelləmə</h3>
     <div id="three-view"></div>
+    <div class="anim-selector">
+      <button id="btn-idle" class="btn-secondary active">🧍 Sakit</button>
+      <button id="btn-walk" class="btn-secondary">🚶 Yeriyiş</button>
+      <button id="btn-dance" class="btn-secondary">💃 Rəqs</button>
+    </div>
     <div class="row">
       <button id="btn-autorotate" class="btn-secondary active">🔄 Fırlanma</button>
-      <button id="btn-walk" class="btn-secondary">🚶 Yeriyiş</button>
     </div>
     <p class="hint">Siçanla sürüşdür — əl ilə çevir</p>
   </div>
@@ -225,6 +272,14 @@ window.addEventListener('DOMContentLoaded', () => {
   let currentSide = 'front';
   let currentType = 'tshirt';
   const CANVAS_W = 260, CANVAS_H = 351;
+
+  // Real geyimdə çap sahəsi bütün gövdəni yox, sinə hissəsini tutur — bələdçi çərçivə bunu göstərir
+  const GUIDE = { left: CANVAS_W * 0.28, top: CANVAS_H * 0.22, width: CANVAS_W * 0.44, height: CANVAS_H * 0.42 };
+  const guideEl = document.getElementById('print-guide');
+  guideEl.style.left = GUIDE.left + 'px';
+  guideEl.style.top = GUIDE.top + 'px';
+  guideEl.style.width = GUIDE.width + 'px';
+  guideEl.style.height = GUIDE.height + 'px';
 
   const fabricConfig = {
     backgroundColor: null,
@@ -299,11 +354,16 @@ window.addEventListener('DOMContentLoaded', () => {
   }
   autoRotateBtn.addEventListener('click', () => setAutoRotate(!autoRotate));
 
-  const walkBtn = document.getElementById('btn-walk');
-  walkBtn.addEventListener('click', () => {
-    walking = !walking;
-    walkBtn.classList.toggle('active', walking);
-  });
+  // ---- Animasiya rejimləri: Sakit / Yeriyiş / Rəqs ----
+  const animBtns = { idle: document.getElementById('btn-idle'), walk: document.getElementById('btn-walk'), dance: document.getElementById('btn-dance') };
+  let animMode = 'idle';
+  function setAnimMode(mode) {
+    animMode = mode;
+    Object.keys(animBtns).forEach(k => animBtns[k].classList.toggle('active', k === mode));
+  }
+  animBtns.idle.addEventListener('click', () => setAnimMode('idle'));
+  animBtns.walk.addEventListener('click', () => setAnimMode('walk'));
+  animBtns.dance.addEventListener('click', () => setAnimMode('dance'));
 
   document.getElementById('add-text-btn').addEventListener('click', () => {
     const txt = document.getElementById('text-input').value;
@@ -321,11 +381,42 @@ window.addEventListener('DOMContentLoaded', () => {
     c.renderAll();
   });
 
-  // ---- Mərkəzi şəkil əlavəetmə funksiyası (fayl / paste / drag-drop hamısı buradan keçir) ----
+  // ---- Tez nişanlar ----
+  document.querySelectorAll('.sticker-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const glyph = btn.dataset.sticker;
+      const text = new fabric.Text(glyph, {
+        left: CANVAS_W / 2, top: CANVAS_H / 2, originX: 'center', originY: 'center',
+        fontSize: 48, fill: document.getElementById('text-color').value
+      });
+      const c = getActiveCanvas();
+      c.add(text); c.setActiveObject(text); c.renderAll();
+    });
+  });
+
+  // ---- Mərkəzi şəkil əlavəetmə (fayl / paste / drag-drop hamısı buradan keçir) ----
+  function fitToGuide(img) {
+    const scaleX = GUIDE.width / img.width;
+    const scaleY = GUIDE.height / img.height;
+    const scale = Math.min(scaleX, scaleY);
+    img.scale(scale);
+    img.set({
+      left: GUIDE.left + GUIDE.width / 2,
+      top: GUIDE.top + GUIDE.height / 2,
+      originX: 'center', originY: 'center'
+    });
+  }
+
   function addImageFromDataUrl(dataUrl) {
     fabric.Image.fromURL(dataUrl, (img) => {
-      img.scaleToWidth(CANVAS_W * 0.4);
-      img.set({ left: CANVAS_W / 2, top: CANVAS_H / 2, originX: 'center', originY: 'center' });
+      const autoFit = document.getElementById('auto-fit-toggle').checked;
+      if (autoFit) {
+        fitToGuide(img);
+      } else {
+        img.scaleToWidth(CANVAS_W * 0.4);
+        img.set({ left: CANVAS_W / 2, top: CANVAS_H / 2, originX: 'center', originY: 'center' });
+      }
+      img.set('globalCompositeOperation', 'multiply');
       const c = getActiveCanvas();
       c.add(img); c.setActiveObject(img); c.renderAll();
       showToast('Şəkil əlavə olundu ✓');
@@ -341,7 +432,6 @@ window.addEventListener('DOMContentLoaded', () => {
     e.target.value = '';
   });
 
-  // ---- Clipboard Paste (brauzerdən kopyala -> Ctrl+V) ----
   window.addEventListener('paste', (e) => {
     const items = e.clipboardData && e.clipboardData.items;
     if (!items) return;
@@ -355,7 +445,6 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // ---- Drag & Drop ----
   const editorContainer = document.getElementById('editor-container');
   editorContainer.addEventListener('dragover', (e) => { e.preventDefault(); editorContainer.classList.add('drag-over'); });
   editorContainer.addEventListener('dragleave', () => editorContainer.classList.remove('drag-over'));
@@ -372,7 +461,6 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // ---- URL-dən yükləmə (bir neçə proksi ilə cəhd, uğursuz ola bilər — CORS brauzer qaydasıdır) ----
   document.getElementById('image-url-btn').addEventListener('click', () => {
     const rawUrl = document.getElementById('image-url-input').value.trim();
     if (!rawUrl) return;
@@ -388,8 +476,10 @@ window.addEventListener('DOMContentLoaded', () => {
       i++;
       fabric.Image.fromURL(url, (img, isError) => {
         if (isError || !img || !img.width) { tryNext(); return; }
-        img.scaleToWidth(CANVAS_W * 0.4);
-        img.set({ left: CANVAS_W / 2, top: CANVAS_H / 2, originX: 'center', originY: 'center' });
+        const autoFit = document.getElementById('auto-fit-toggle').checked;
+        if (autoFit) fitToGuide(img);
+        else { img.scaleToWidth(CANVAS_W * 0.4); img.set({ left: CANVAS_W / 2, top: CANVAS_H / 2, originX: 'center', originY: 'center' }); }
+        img.set('globalCompositeOperation', 'multiply');
         const c = getActiveCanvas();
         c.add(img); c.setActiveObject(img); c.renderAll();
         showToast('Şəkil əlavə olundu ✓');
@@ -424,20 +514,29 @@ window.addEventListener('DOMContentLoaded', () => {
   // ---- Effekt Paneli ----
   const effectsPanel = document.getElementById('effects-panel');
   const opacitySlider = document.getElementById('opacity-slider');
+  const rotateSlider = document.getElementById('rotate-slider');
+  const scaleSlider = document.getElementById('scale-slider');
   const shadowToggle = document.getElementById('shadow-toggle');
   const shadowColor = document.getElementById('shadow-color');
+  const blendSelect = document.getElementById('blend-select');
 
   function refreshEffectsPanel(obj) {
     if (!obj) { effectsPanel.classList.remove('show'); return; }
     effectsPanel.classList.add('show');
     opacitySlider.value = Math.round((obj.opacity ?? 1) * 100);
     document.getElementById('opacity-val').innerText = opacitySlider.value + '%';
+    rotateSlider.value = Math.round(obj.angle || 0);
+    document.getElementById('rotate-val').innerText = rotateSlider.value + '°';
+    scaleSlider.value = Math.round((obj.scaleX || 1) * 100);
+    document.getElementById('scale-val').innerText = scaleSlider.value + '%';
     shadowToggle.checked = !!obj.shadow;
+    blendSelect.value = obj.globalCompositeOperation || 'source-over';
   }
   function bindSelection(c) {
     c.on('selection:created', () => refreshEffectsPanel(c.getActiveObject()));
     c.on('selection:updated', () => refreshEffectsPanel(c.getActiveObject()));
     c.on('selection:cleared', () => refreshEffectsPanel(null));
+    c.on('object:modified', () => refreshEffectsPanel(c.getActiveObject()));
   }
   bindSelection(canvasFront);
   bindSelection(canvasBack);
@@ -446,6 +545,45 @@ window.addEventListener('DOMContentLoaded', () => {
     const obj = getActiveCanvas().getActiveObject();
     document.getElementById('opacity-val').innerText = e.target.value + '%';
     if (obj) { obj.set('opacity', e.target.value / 100); getActiveCanvas().renderAll(); }
+  });
+  rotateSlider.addEventListener('input', (e) => {
+    const obj = getActiveCanvas().getActiveObject();
+    document.getElementById('rotate-val').innerText = e.target.value + '°';
+    if (obj) { obj.rotate(parseInt(e.target.value)); getActiveCanvas().renderAll(); }
+  });
+  scaleSlider.addEventListener('input', (e) => {
+    const obj = getActiveCanvas().getActiveObject();
+    document.getElementById('scale-val').innerText = e.target.value + '%';
+    if (obj) {
+      const s = e.target.value / 100;
+      obj.set({ scaleX: s, scaleY: s });
+      getActiveCanvas().renderAll();
+    }
+  });
+  document.getElementById('flip-btn').addEventListener('click', () => {
+    const obj = getActiveCanvas().getActiveObject();
+    if (obj) { obj.set('flipX', !obj.flipX); getActiveCanvas().renderAll(); }
+  });
+  document.getElementById('fit-btn').addEventListener('click', () => {
+    const obj = getActiveCanvas().getActiveObject();
+    if (obj) { fitToGuide(obj); getActiveCanvas().renderAll(); refreshEffectsPanel(obj); }
+  });
+  document.getElementById('dup-btn').addEventListener('click', () => {
+    const c = getActiveCanvas();
+    const obj = c.getActiveObject();
+    if (!obj) return;
+    obj.clone((cloned) => {
+      cloned.set({ left: obj.left + 15, top: obj.top + 15 });
+      c.add(cloned); c.setActiveObject(cloned); c.renderAll();
+    });
+  });
+  document.getElementById('front-layer-btn').addEventListener('click', () => {
+    const c = getActiveCanvas(); const obj = c.getActiveObject();
+    if (obj) { c.bringToFront(obj); c.renderAll(); }
+  });
+  document.getElementById('back-layer-btn').addEventListener('click', () => {
+    const c = getActiveCanvas(); const obj = c.getActiveObject();
+    if (obj) { c.sendToBack(obj); c.renderAll(); }
   });
   shadowToggle.addEventListener('change', () => {
     const obj = getActiveCanvas().getActiveObject();
@@ -456,6 +594,10 @@ window.addEventListener('DOMContentLoaded', () => {
   shadowColor.addEventListener('input', () => {
     const obj = getActiveCanvas().getActiveObject();
     if (obj && obj.shadow) { obj.shadow.color = shadowColor.value; getActiveCanvas().renderAll(); }
+  });
+  blendSelect.addEventListener('change', () => {
+    const obj = getActiveCanvas().getActiveObject();
+    if (obj) { obj.set('globalCompositeOperation', blendSelect.value); getActiveCanvas().renderAll(); }
   });
 
   document.querySelectorAll('.filter-row button').forEach(btn => {
@@ -500,11 +642,7 @@ window.addEventListener('DOMContentLoaded', () => {
   scene.add(rimLight);
   scene.add(new THREE.AmbientLight(0xffffff, 0.35));
 
-  // Yerdə yumşaq kölgə üçün "shadow catcher" zəmin
-  const floor = new THREE.Mesh(
-    new THREE.PlaneGeometry(6, 6),
-    new THREE.ShadowMaterial({ opacity: 0.35 })
-  );
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(6, 6), new THREE.ShadowMaterial({ opacity: 0.35 }));
   floor.rotation.x = -Math.PI / 2;
   floor.position.y = -1.65;
   floor.receiveShadow = true;
@@ -514,8 +652,8 @@ window.addEventListener('DOMContentLoaded', () => {
   scene.add(shirtGroup);
 
   let bodyMat, leftMat, rightMat, skinMat, frontTex, backTex;
-  let leftArmGroup, rightArmGroup, leftLegGroup, rightLegGroup;
-  let autoRotate = true, walking = false, walkClock = 0, targetRotationY = 0;
+  let headMesh, torsoMesh, leftArmGroup, rightArmGroup, leftLegGroup, rightLegGroup;
+  let autoRotate = true, clock = 0, targetRotationY = 0;
 
   function update3DModel() {
     while (shirtGroup.children.length > 0) shirtGroup.remove(shirtGroup.children[0]);
@@ -532,16 +670,16 @@ window.addEventListener('DOMContentLoaded', () => {
 
     function mesh(geo, mat) { const m = new THREE.Mesh(geo, mat); m.castShadow = true; m.receiveShadow = true; return m; }
 
-    const head = mesh(new THREE.SphereGeometry(0.25, 24, 24), skinMat);
-    head.position.set(0, 1.15, 0);
-    shirtGroup.add(head);
+    headMesh = mesh(new THREE.SphereGeometry(0.25, 24, 24), skinMat);
+    headMesh.position.set(0, 1.15, 0);
+    shirtGroup.add(headMesh);
     const neck = mesh(new THREE.CylinderGeometry(0.1, 0.12, 0.15, 12), skinMat);
     neck.position.set(0, 0.92, 0);
     shirtGroup.add(neck);
 
-    const torso = mesh(new THREE.BoxGeometry(1.1, 1.3, 0.32), bodyMat);
-    torso.position.set(0, 0.18, 0);
-    shirtGroup.add(torso);
+    torsoMesh = mesh(new THREE.BoxGeometry(1.1, 1.3, 0.32), bodyMat);
+    torsoMesh.position.set(0, 0.18, 0);
+    shirtGroup.add(torsoMesh);
 
     if (currentType === 'hoodie') {
       const hood = mesh(new THREE.SphereGeometry(0.32, 16, 16), bodyMat);
@@ -563,7 +701,6 @@ window.addEventListener('DOMContentLoaded', () => {
         forearm.position.set(0, -sleeveLen - forearmLen / 2, 0);
         group.add(forearm);
       }
-      group.rotation.z = side * 0.1;
       shirtGroup.add(group);
       return group;
     }
@@ -586,7 +723,6 @@ window.addEventListener('DOMContentLoaded', () => {
     backTex = new THREE.CanvasTexture(document.getElementById('canvas-back'));
     [frontTex, backTex].forEach(tex => { tex.minFilter = THREE.LinearFilter; tex.magFilter = THREE.LinearFilter; });
 
-    // Kanvas ölçüsü (260x351) plane ölçüsünə (1.0 x 1.35) tam uyğundur — eyni aspekt nisbəti
     const printGeo = new THREE.PlaneGeometry(1.0, 1.35);
 
     const printFront = new THREE.Mesh(printGeo, new THREE.MeshBasicMaterial({ map: frontTex, transparent: true, alphaTest: 0.05, depthWrite: false }));
@@ -630,21 +766,37 @@ window.addEventListener('DOMContentLoaded', () => {
 
   function animate() {
     requestAnimationFrame(animate);
+    clock += 0.016;
 
-    if (walking) {
-      walkClock += 0.12;
-      const swing = Math.sin(walkClock) * 0.5;
+    if (animMode === 'walk') {
+      const swing = Math.sin(clock * 5) * 0.5;
       if (leftArmGroup) leftArmGroup.rotation.x = swing;
       if (rightArmGroup) rightArmGroup.rotation.x = -swing;
       if (leftLegGroup) leftLegGroup.rotation.x = -swing;
       if (rightLegGroup) rightLegGroup.rotation.x = swing;
-      shirtGroup.position.y = Math.abs(Math.sin(walkClock * 2)) * 0.06;
+      shirtGroup.position.y = Math.abs(Math.sin(clock * 10)) * 0.06;
+      shirtGroup.rotation.z *= 0.9;
+    } else if (animMode === 'dance') {
+      const t = clock * 6;
+      if (leftArmGroup) leftArmGroup.rotation.x = Math.sin(t) * 1.1 - 0.3;
+      if (rightArmGroup) rightArmGroup.rotation.x = Math.sin(t + Math.PI) * 1.1 - 0.3;
+      if (leftArmGroup) leftArmGroup.rotation.z = Math.cos(t * 0.7) * 0.3;
+      if (rightArmGroup) rightArmGroup.rotation.z = -Math.cos(t * 0.7) * 0.3;
+      if (leftLegGroup) leftLegGroup.rotation.x = Math.sin(t * 1.3) * 0.35;
+      if (rightLegGroup) rightLegGroup.rotation.x = -Math.sin(t * 1.3) * 0.35;
+      shirtGroup.rotation.z = Math.sin(t * 0.8) * 0.12;
+      shirtGroup.position.y = Math.abs(Math.sin(t * 1.6)) * 0.1;
+      if (headMesh) headMesh.rotation.z = Math.sin(t * 0.9) * 0.15;
     } else {
-      if (leftArmGroup) leftArmGroup.rotation.x *= 0.9;
-      if (rightArmGroup) rightArmGroup.rotation.x *= 0.9;
+      if (leftArmGroup) { leftArmGroup.rotation.x *= 0.9; leftArmGroup.rotation.z *= 0.9; }
+      if (rightArmGroup) { rightArmGroup.rotation.x *= 0.9; rightArmGroup.rotation.z *= 0.9; }
       if (leftLegGroup) leftLegGroup.rotation.x *= 0.9;
       if (rightLegGroup) rightLegGroup.rotation.x *= 0.9;
+      if (headMesh) headMesh.rotation.z *= 0.9;
       shirtGroup.position.y *= 0.9;
+      shirtGroup.rotation.z *= 0.9;
+      // sakit vəziyyətdə yüngül nəfəs effekti
+      if (torsoMesh) torsoMesh.scale.y = 1 + Math.sin(clock * 1.5) * 0.01;
     }
 
     if (autoRotate) {
